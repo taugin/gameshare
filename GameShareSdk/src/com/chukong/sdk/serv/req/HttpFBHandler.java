@@ -68,6 +68,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         String target = URLDecoder.decode(request.getRequestLine().getUri(), Config.ENCODING);
         Header requestHost = request.getFirstHeader("Host");
         InetAddress ipAddress = (InetAddress) context.getAttribute("remote_ip_address");
+        Log.d(Log.TAG, "requestHost = " + requestHost);
         Log.d(Log.TAG, "clientIpAddress = " + ipAddress.getHostAddress() + " , target = " + target);
         String requestMethod = null;
         RequestLine requestLine = request.getRequestLine();
@@ -80,7 +81,6 @@ public class HttpFBHandler implements HttpRequestHandler {
         File file;
         if (target.equals("/view.html")) {
             file = new File(this.webRoot);
-            Log.d(Log.TAG, "view.html");
         } else if (!target.startsWith(Config.SERV_ROOT_DIR) && !target.startsWith(this.webRoot)
                 && !target.startsWith("/data/app") && !target.startsWith("/system/app")) {
             String ip = mCommonUtil.getLocalIpAddress();
