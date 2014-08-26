@@ -266,15 +266,18 @@ public class HttpFBHandler implements HttpRequestHandler {
         if (files != null) {
             sort(files); // 排序
             ArrayList<FileRow> fileRows = new ArrayList<FileRow>();
-            for (File file : files) {
-                fileRows.add(buildFileRow(file, false));
-            }
-            if (Config.SHOW_INSTALLED_APP) {
-                File appFiles[] = getFileFromDataApp();
-                sort(appFiles);
-                for (File file : appFiles) {
-                    if (file != null && file.length() >= 1024 * 1024) {
-                        fileRows.add(buildFileRow(file, true));
+            boolean localShare = GlobalInit.getInstance().getLocalShare();
+            if (!localShare) {
+                for (File file : files) {
+                    fileRows.add(buildFileRow(file, false));
+                }
+                if (Config.SHOW_INSTALLED_APP) {
+                    File appFiles[] = getFileFromDataApp();
+                    sort(appFiles);
+                    for (File file : appFiles) {
+                        if (file != null && file.length() >= 1024 * 1024) {
+                            fileRows.add(buildFileRow(file, true));
+                        }
                     }
                 }
             }

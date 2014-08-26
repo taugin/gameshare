@@ -17,6 +17,7 @@ public class GlobalInit {
 
     private Context mContext;
     private static GlobalInit sGlobalInit = null;
+    private boolean mLocalShare = false;
     public static GlobalInit getInstance() {
         if (sGlobalInit == null) {
             throw new AndroidRuntimeException("GlobalInit should be called first");
@@ -30,6 +31,14 @@ public class GlobalInit {
 
     public Context getBaseContext() {
         return mContext;
+    }
+
+    public void setLocalShare(boolean local) {
+        mLocalShare = local;
+    }
+
+    public boolean getLocalShare() {
+        return mLocalShare;
     }
 
     public void init() {

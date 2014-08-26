@@ -62,6 +62,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
         super.onCreate(savedInstanceState);
         GlobalInit globalInit = new GlobalInit(getContext());
         globalInit.init();
+        globalInit.setLocalShare(true);
         webServIntent = new Intent(getContext(), WebService.class);
         mCommonUtil = CommonUtil.getSingleton();
         mQRImage = new ImageView(getContext());
