@@ -413,7 +413,7 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
         try {
             int dimension = getDimension();
             QRCodeEncoder qrCodeEncoder = new QRCodeEncoder(this, intent, dimension, false);
-            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
             qrCodeEncoder.setLogoBmp(bmp);
             Bitmap bitmap = qrCodeEncoder.encodeAsBitmap();
             if (bitmap == null) {

@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Mon Aug 25 14:27:39 CST 2014
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=GameShareSdk_fat.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
