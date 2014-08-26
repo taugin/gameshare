@@ -11,7 +11,10 @@ import android.os.Environment;
 public final class Constants {
 
     public static String APP_DIR_NAME = "/.ws/";
-    public static String APP_DIR = Environment.getExternalStorageDirectory() + APP_DIR_NAME;
+    public static String APP_DIR = null;
+    static {
+        APP_DIR = CommonUtil.getSingleton().getAppDir() + APP_DIR_NAME;
+    }
 
     public static class Config {
         public static final boolean DEV_MODE = false;

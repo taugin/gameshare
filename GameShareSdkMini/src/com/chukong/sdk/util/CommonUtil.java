@@ -121,9 +121,14 @@ public class CommonUtil {
     }
 
     public String getGameDir() {
-        File externalDir = Environment.getExternalStorageDirectory();
-        if (externalDir != null) {
-            String gameDir = externalDir.getAbsolutePath() + "/" + "Games";
+        File fileDir = null;
+        if (!isExternalStorageMounted()) {
+            fileDir = mContext.getFilesDir();
+        } else {
+            fileDir = Environment.getExternalStorageDirectory();
+        }
+        if (fileDir != null) {
+            String gameDir = fileDir.getAbsolutePath() + "/" + "Games";
             File gameFile = new File(gameDir);
             if (!gameFile.exists()) {
                 gameFile.mkdirs();
@@ -131,6 +136,16 @@ public class CommonUtil {
             return gameDir;
         }
         return "/";
+    }
+
+    public String getAppDir() {
+        File fileDir = null;
+        if (!isExternalStorageMounted()) {
+            fileDir = mContext.getFilesDir();
+        } else {
+            fileDir = Environment.getExternalStorageDirectory();
+        }
+        return fileDir.getAbsolutePath();
     }
     /**
      * @brief 获取文件系统路径内的可用空间，单位bytes
