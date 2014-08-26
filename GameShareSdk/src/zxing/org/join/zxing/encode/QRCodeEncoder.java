@@ -29,15 +29,15 @@ import java.util.Map;
 import org.join.zxing.Contents;
 import org.join.zxing.Intents;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
-import android.util.Log;
+import com.chukong.sdk.common.Log;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -48,6 +48,7 @@ import com.google.zxing.client.result.AddressBookParsedResult;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.ResultParser;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 /**
  * This class does the work of decoding the user's request and extracting all the data
@@ -69,6 +70,7 @@ public final class QRCodeEncoder {
     private BarcodeFormat format;
     private final int dimension;
     private final boolean useVCard;
+    private Bitmap mLogoBmp;
 
     public QRCodeEncoder(Context activity, Intent intent, int dimension, boolean useVCard)
             throws WriterException {
@@ -319,6 +321,7 @@ public final class QRCodeEncoder {
         String encoding = guessAppropriateEncoding(contentsToEncode);
         if (encoding != null) {
             hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
             hints.put(EncodeHintType.CHARACTER_SET, encoding);
         }
         BitMatrix result;
@@ -341,6 +344,18 @@ public final class QRCodeEncoder {
 
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        if (mLogoBmp != null) {
+            int w = mLogoBmp.getWidth();
+            int h = mLogoBmp.getHeight();
+            mLogoBmp = Bitmap.createScaledBitmap(mLogoBmp, 48, 48, false);
+            Log.d(Log.TAG, "w = " + w);
+            Log.d(Log.TAG, "h = " + h);
+            float left = (float)width / 2 - 48 / 2;
+            float top = (float)height / 2 - 48 / 2;
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawBitmap(mLogoBmp, left, top, null);
+            mLogoBmp.recycle();
+        }
         return bitmap;
     }
 
@@ -354,4 +369,7 @@ public final class QRCodeEncoder {
         return null;
     }
 
+    public void setLogoBmp(Bitmap bmp) {
+        mLogoBmp = bmp;
+    }
 }

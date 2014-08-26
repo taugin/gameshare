@@ -1,6 +1,8 @@
 package com.chukong.sdkdemo;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 
@@ -16,6 +18,8 @@ public class MainActivity extends Activity {
 
     public void onClick(View view) {
         ShareDialog dialog = new ShareDialog(this);
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
+        dialog.setLogoBmp(bmp);
         dialog.show();
     }
 }

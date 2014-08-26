@@ -4,6 +4,7 @@ import org.join.zxing.Contents;
 import org.join.zxing.Intents;
 import org.join.zxing.encode.QRCodeEncoder;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -49,6 +50,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     private boolean isBound = false;
     private String ipAddr = null;
     private CommonUtil mCommonUtil;
+    private Bitmap mLogoBmp;
 
     private ImageView mQRImage = null;
     public ShareDialog(Context context) {
@@ -64,6 +66,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
         mCommonUtil = CommonUtil.getSingleton();
         mQRImage = new ImageView(getContext());
         setContentView(mQRImage);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     
@@ -99,7 +102,12 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
         }
     }
     
+    @SuppressLint("NewApi")
     private void setWifiApEnabled(boolean enabled) {
+        boolean apEnable = WifiApManager.getInstance(getContext()).isWifiApEnabled();
+        if (apEnable == enabled) {
+            return ;
+        }
         if (enabled) {
             WifiConfiguration oldConfig = WifiApManager.getInstance(getContext()).getWifiApConfiguration();
             Log.d(Log.TAG, "----------------------oldConfig = " + oldConfig);
@@ -188,6 +196,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
         try {
             int dimension = getDimension();
             QRCodeEncoder qrCodeEncoder = new QRCodeEncoder(getContext(), intent, dimension, false);
+            qrCodeEncoder.setLogoBmp(mLogoBmp);
             Bitmap bitmap = qrCodeEncoder.encodeAsBitmap();
             if (bitmap == null) {
                 Log.w(Log.TAG, "Could not encode barcode");
@@ -231,4 +240,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
         }
 
     };
+    public void setLogoBmp(Bitmap bmp) {
+        mLogoBmp = bmp;
+    }
 }

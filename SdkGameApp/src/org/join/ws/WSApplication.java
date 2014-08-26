@@ -28,7 +28,7 @@ public class WSApplication extends Application {
         init.init();
         if (!Config.DEV_MODE) {
             /* 全局异常崩溃处理 */
-            new CrashHandler(this);
+            //new CrashHandler(this);
         }
 
         PreferActivity.restoreAll();
