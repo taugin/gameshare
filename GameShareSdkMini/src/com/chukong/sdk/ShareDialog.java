@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences.Editor;
@@ -37,8 +38,9 @@ import com.chukong.sdk.util.CommonUtil;
 import com.chukong.sdk.wifiap.WifiApManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
+import android.content.DialogInterface.OnDismissListener;
 
-public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, OnWebServListener {
+public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, OnWebServListener, OnDismissListener {
 
     private static final int W_START = 0x0101;
     private static final int W_STOP = 0x0102;
@@ -60,6 +62,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     public ShareDialog(Context context) {
         super(context, THEME_LIGHT);
         setCanceledOnTouchOutside(false);
+        setOnDismissListener(this);
     }
 
     @Override
@@ -272,5 +275,9 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
         protected void onPostExecute(Void result) {
             setWifiApEnabled(true);
         }
+    }
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        Log.d(Log.TAG, "dialog = " + dialog);
     }
 }
