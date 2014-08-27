@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.net.wifi.WifiConfiguration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,7 +22,6 @@ import android.preference.PreferenceManager;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,6 +43,10 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     private static final int W_START = 0x0101;
     private static final int W_STOP = 0x0102;
     private static final int W_ERROR = 0x0103;
+    private static final int THEME_LIGHT_FULLSCREEN = android.R.style.Theme_Light_NoTitleBar_Fullscreen;
+    private static final int THEME_LIGHT = android.R.style.Theme_Light_NoTitleBar;
+
+    private static String tips = "请好友连接Chukong-Share热点\n并输入一下地址或扫描二维码\nhttp://192.168.43.1:7766";
 
     protected Intent webServIntent;
     protected WebService webService;
@@ -52,18 +56,18 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     private Bitmap mLogoBmp;
 
     private ImageView mQRImage = null;
+
     public ShareDialog(Context context) {
-        super(context, android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+        super(context, THEME_LIGHT);
+        setCanceledOnTouchOutside(false);
     }
 
-    private static String tips = "请好友连接Chukong-Share热点\n并输入一下地址或扫描二维码\nhttp://192.168.43.1:7766";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // requestWindowFeature(Window.FEATURE_NO_TITLE);
         GlobalInit globalInit = new GlobalInit(getContext());
-        globalInit.init();
-        globalInit.setLocalShare(true);
+        new GlobalThread().execute(globalInit);
         webServIntent = new Intent(getContext(), WebService.class);
         mCommonUtil = CommonUtil.getSingleton();
 
@@ -86,7 +90,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     protected void onStart() {
         super.onStart();
         WifiApStateReceiver.register(getContext(), this);
-        setWifiApEnabled(true);
+        //setWifiApEnabled(true);
     }
 
     @Override
@@ -254,5 +258,19 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     };
     public void setLogoBmp(Bitmap bmp) {
         mLogoBmp = bmp;
+    }
+    private class GlobalThread extends AsyncTask<GlobalInit, Void, Void> {
+        @Override
+        protected Void doInBackground(GlobalInit... params) {
+            GlobalInit globalInit = params[0];
+            globalInit.init();
+            globalInit.setLocalShare(true);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            setWifiApEnabled(true);
+        }
     }
 }
