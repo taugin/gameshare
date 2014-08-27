@@ -344,17 +344,21 @@ public final class QRCodeEncoder {
 
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        if (mLogoBmp != null) {
-            int w = mLogoBmp.getWidth();
-            int h = mLogoBmp.getHeight();
-            mLogoBmp = Bitmap.createScaledBitmap(mLogoBmp, 48, 48, false);
-            Log.d(Log.TAG, "w = " + w);
-            Log.d(Log.TAG, "h = " + h);
-            float left = (float)width / 2 - 48 / 2;
-            float top = (float)height / 2 - 48 / 2;
-            Canvas canvas = new Canvas(bitmap);
-            canvas.drawBitmap(mLogoBmp, left, top, null);
-            mLogoBmp.recycle();
+        try {
+            if (mLogoBmp != null) {
+                int w = mLogoBmp.getWidth();
+                int h = mLogoBmp.getHeight();
+                mLogoBmp = Bitmap.createScaledBitmap(mLogoBmp, 48, 48, false);
+                Log.d(Log.TAG, "w = " + w);
+                Log.d(Log.TAG, "h = " + h);
+                float left = (float)width / 2 - 48 / 2;
+                float top = (float)height / 2 - 48 / 2;
+                Canvas canvas = new Canvas(bitmap);
+                canvas.drawBitmap(mLogoBmp, left, top, null);
+                mLogoBmp.recycle();
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
         }
         return bitmap;
     }
