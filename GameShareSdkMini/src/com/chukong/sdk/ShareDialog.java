@@ -53,7 +53,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
 
     private ImageView mQRImage = null;
     public ShareDialog(Context context) {
-        super(context, android.R.style.Theme_Light_NoTitleBar);
+        super(context, android.R.style.Theme_Light_NoTitleBar_Fullscreen);
     }
 
     private static String tips = "请好友连接Chukong-Share热点\n并输入一下地址或扫描二维码\nhttp://192.168.43.1:7766";
