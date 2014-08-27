@@ -106,7 +106,7 @@
                 <action android:name="android.net.wifi.WIFI_AP_STATE_CHANGED" />
             </intent-filter>
         </service>
-        <receiver android:name="com.chukong.apwebauthentication.receiver.BootReceiver">
+        <receiver android:name="org.join.ws.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>

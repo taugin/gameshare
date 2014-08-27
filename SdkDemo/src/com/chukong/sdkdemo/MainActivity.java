@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.chukong.sdk.ShareDialog;
+import com.chukong.sdk.common.Log;
 
 public class MainActivity extends Activity {
 
@@ -21,5 +22,29 @@ public class MainActivity extends Activity {
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
         dialog.setLogoBmp(bmp);
         dialog.show();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d("taugin", "onStart");
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d("taugin", "onResume");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("taugin", "onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("taugin", "onStop");
+        super.onStop();
     }
 }

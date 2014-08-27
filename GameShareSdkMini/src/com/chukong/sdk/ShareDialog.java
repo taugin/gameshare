@@ -19,9 +19,13 @@ import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.chukong.sdk.Constants.Config;
 import com.chukong.sdk.common.Log;
@@ -40,11 +44,6 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     private static final int W_STOP = 0x0102;
     private static final int W_ERROR = 0x0103;
 
-    private static final int DLG_SERV_USELESS = 0x0201;
-    private static final int DLG_PORT_IN_USE = 0x0202;
-    private static final int DLG_TEMP_NOT_FOUND = 0x0203;
-    private static final int DLG_SCAN_RESULT = 0x0204;
-
     protected Intent webServIntent;
     protected WebService webService;
     private boolean isBound = false;
@@ -54,23 +53,35 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
 
     private ImageView mQRImage = null;
     public ShareDialog(Context context) {
-        super(context);
+        super(context, android.R.style.Theme_Light_NoTitleBar);
     }
 
+    private static String tips = "请好友连接Chukong-Share热点\n并输入一下地址或扫描二维码\nhttp://192.168.43.1:7766";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         GlobalInit globalInit = new GlobalInit(getContext());
         globalInit.init();
         globalInit.setLocalShare(true);
         webServIntent = new Intent(getContext(), WebService.class);
         mCommonUtil = CommonUtil.getSingleton();
-        mQRImage = new ImageView(getContext());
-        setContentView(mQRImage);
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        setContentView(initView());
     }
 
-    
+    private View initView() {
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        TextView textview = new TextView(getContext());
+        textview.setGravity(Gravity.CENTER_HORIZONTAL);
+        textview.setText(tips);
+        layout.addView(textview);
+        mQRImage = new ImageView(getContext());
+        layout.addView(mQRImage);
+        return layout;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
