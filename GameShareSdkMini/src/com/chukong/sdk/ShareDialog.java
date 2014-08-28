@@ -1,5 +1,7 @@
 package com.chukong.sdk;
 
+import java.io.IOException;
+
 import org.join.zxing.Contents;
 import org.join.zxing.Intents;
 import org.join.zxing.encode.QRCodeEncoder;
@@ -9,10 +11,20 @@ import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences.Editor;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Paint.Style;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.net.wifi.WifiConfiguration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,6 +38,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.chukong.sdk.Constants.Config;
@@ -38,7 +51,6 @@ import com.chukong.sdk.util.CommonUtil;
 import com.chukong.sdk.wifiap.WifiApManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
-import android.content.DialogInterface.OnDismissListener;
 
 public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, OnWebServListener, OnDismissListener {
 
@@ -74,7 +86,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
         webServIntent = new Intent(getContext(), WebService.class);
         mCommonUtil = CommonUtil.getSingleton();
 
-        setContentView(initView());
+        setContentView(initView2());
     }
 
     private View initView() {
@@ -89,6 +101,96 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
         return layout;
     }
 
+    private View initView2() {
+        AssetManager assetManager = getContext().getAssets();
+        AssetFileDescriptor afd = null;
+        Bitmap wifiBmp = null;
+        Bitmap nextBmp = null;
+        Drawable wifiDrawable = null;
+        try {
+            afd = assetManager.openFd("next_down.png");
+            Log.d(Log.TAG, "afd2 = " + afd);
+            if (afd != null) {
+                nextBmp = BitmapFactory.decodeStream(afd.createInputStream());
+            }
+            Log.d(Log.TAG, "afd3 = " + afd);
+            if (afd != null) {
+                afd = assetManager.openFd("wifi.png");
+                wifiBmp = BitmapFactory.decodeStream(afd.createInputStream());
+                if (wifiBmp != null) {
+                    wifiDrawable = new BitmapDrawable(wifiBmp);
+                }
+            }
+        } catch (IOException e) {
+            Log.e(Log.TAG, e.getMessage());
+        }
+        Log.d(Log.TAG, "wifiBmp = " + wifiBmp + " , nextBmp = " + nextBmp + " , guideDrawable = " + wifiDrawable);
+        ScrollView scrollView = new ScrollView(getContext());
+        LinearLayout layout = new LinearLayout(getContext());
+        scrollView.addView(layout);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setGravity(Gravity.CENTER_HORIZONTAL);
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = dip2px(getContext(), 48);//LinearLayout.LayoutParams.WRAP_CONTENT;
+        LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(width, height);
+
+        LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+        TextView stepOne = new TextView(getContext());
+        stepOne.setTextSize(20.0f);
+        stepOne.setText("第一步");
+        layout.addView(stepOne, params2);
+        TextView stepOneTips = new TextView(getContext());
+        stepOneTips.setText("请好友打开手机Wifi，连接到无线网络");
+        layout.addView(stepOneTips, params2);
+
+        TextView SSID = new TextView(getContext());
+        SSID.setGravity(Gravity.CENTER_VERTICAL);
+        SSID.setTextSize(15.0f);
+        SSID.setText("Chukong-Share");
+        if (wifiDrawable != null) {
+            wifiDrawable.setBounds(new Rect(0, 0, 48, 48));
+            SSID.setCompoundDrawables(null, null, wifiDrawable, null);
+            SSID.setCompoundDrawablePadding(50);
+        }
+        layout.addView(SSID, params1);
+        ShapeDrawable shapeDrawable = new ShapeDrawable();
+        shapeDrawable.setBounds(new Rect(0, 0, SSID.getWidth(), SSID.getHeight()));
+        shapeDrawable.getPaint().setColor(0xFF11C2EE);
+        shapeDrawable.getPaint().setStrokeWidth(5);
+        shapeDrawable.getPaint().setStyle(Style.STROKE);
+        SSID.setBackgroundDrawable(shapeDrawable);
+
+        ImageView imageview = new ImageView(getContext());
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(48, 48);
+        if (nextBmp != null) {
+            imageview.setImageBitmap(nextBmp);
+        }
+        layout.addView(imageview, params);
+
+        TextView stepTwo = new TextView(getContext());
+        stepTwo.setTextSize(20.0f);
+        stepTwo.setText("第二步");
+        layout.addView(stepTwo, params2);
+        TextView stepTwoTips = new TextView(getContext());
+        stepTwoTips.setText("打开浏览器输入网址 或 扫描二维码");
+        layout.addView(stepTwoTips, params2);
+
+        TextView webSite = new TextView(getContext());
+        webSite.setGravity(Gravity.CENTER_VERTICAL);
+        webSite.setPadding(5, 0, 5, 0);
+        webSite.setText("http://192.168.43.1:7766");
+        layout.addView(webSite, params1);
+        shapeDrawable = new ShapeDrawable();
+        shapeDrawable.setBounds(new Rect(0, 0, SSID.getWidth(), SSID.getHeight()));
+        shapeDrawable.getPaint().setColor(0xFF11C2EE);
+        shapeDrawable.getPaint().setStrokeWidth(5);
+        shapeDrawable.getPaint().setStyle(Style.STROKE);
+        webSite.setBackgroundDrawable(shapeDrawable);
+
+        mQRImage = new ImageView(getContext());
+        layout.addView(mQRImage);
+        return scrollView;
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -279,5 +381,14 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     @Override
     public void onDismiss(DialogInterface dialog) {
         Log.d(Log.TAG, "dialog = " + dialog);
+    }
+
+    public static int dip2px(Context context, float dipValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * scale + 0.5f);
+    }
+    public static int px2dip(Context context, float pxValue){
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int)(pxValue / scale + 0.5f);
     }
 }
