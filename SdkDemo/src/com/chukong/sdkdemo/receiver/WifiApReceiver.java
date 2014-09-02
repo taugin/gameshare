@@ -12,12 +12,15 @@ public class WifiApReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent == null) {
-            return ;
+            return;
         }
         Log.d("taugin", "intent = " + intent.getAction());
-        if (ApWebAuthService.WIFI_AP_STATE_CHANGED_ACTION.equals(intent.getAction())) {
-            Intent service = new Intent(ApWebAuthService.WIFI_AP_STATE_CHANGED_ACTION);
-            int state = intent.getIntExtra(ApWebAuthService.EXTRA_WIFI_AP_STATE, -1);
+        if (ApWebAuthService.WIFI_AP_STATE_CHANGED_ACTION.equals(intent
+                .getAction())) {
+            Intent service = new Intent(
+                    ApWebAuthService.WIFI_AP_STATE_CHANGED_ACTION);
+            int state = intent.getIntExtra(
+                    ApWebAuthService.EXTRA_WIFI_AP_STATE, -1);
             service.putExtra(ApWebAuthService.EXTRA_WIFI_AP_STATE, state);
             context.startService(service);
         }
