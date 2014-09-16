@@ -22,6 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
 
+import com.chukong.sdk.ShareDialog;
 import com.chukong.sdkdemo.service.TimeSyncControl;
 
 public class MainActivity extends Activity implements OnClickListener,
