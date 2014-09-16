@@ -14,11 +14,13 @@ import com.chukong.sdk.util.CommonUtil;
 public class RedirectSwitch {
     private boolean mRedirected = false;
     private Context mContext;
+
     private RedirectSwitch(Context context) {
         mContext = context;
     }
 
     private static RedirectSwitch sRedirectSwitch = null;
+
     public static RedirectSwitch getInstance(Context context) {
         if (sRedirectSwitch == null) {
             sRedirectSwitch = new RedirectSwitch(context);
@@ -35,7 +37,8 @@ public class RedirectSwitch {
             }
             String subNet = tmpAddr + ".0/24";
             Log.d(Log.TAG, "subNet = " + subNet);
-            script = IptableSet.generateClearIpRule() + IptableSet.generateIpCheckRule(subNet);
+            script = IptableSet.generateClearIpRule()
+                    + IptableSet.generateIpCheckRule(subNet);
         } else {
             script = IptableSet.generateClearIpRule();
         }
@@ -53,12 +56,15 @@ public class RedirectSwitch {
         }
         if (iptablesResult != null) {
             if (iptablesResult.contains(Constants.IPTABLES_SUCCESS)) {
-                PreferenceManager.getDefaultSharedPreferences(mContext).edit().putBoolean(Constants.REDIRECT_STATUS, redirect).apply();
+                PreferenceManager.getDefaultSharedPreferences(mContext).edit()
+                        .putBoolean(Constants.REDIRECT_STATUS, redirect)
+                        .commit();
                 return true;
             }
         }
         return false;
     }
+
     public boolean hasRedirected() {
         String script = IptableSet.NAT_RULE_LIST;
         StringBuilder builder = new StringBuilder();
@@ -76,7 +82,7 @@ public class RedirectSwitch {
         }
         return false;
     }
-    
+
     private String getSubnet() {
         String addr = null;
         int count = 0;
@@ -85,13 +91,14 @@ public class RedirectSwitch {
             count++;
             if (addr == null) {
                 try {
-                    Log.d(Log.TAG, "sleep 500ms-------------------------------------------------------");
+                    Log.d(Log.TAG,
+                            "sleep 500ms-------------------------------------------------------");
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        } while(addr == null && count < 3);
+        } while (addr == null && count < 3);
         if (addr == null) {
             return null;
         }

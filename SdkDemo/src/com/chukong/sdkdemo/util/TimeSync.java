@@ -1,15 +1,28 @@
 package com.chukong.sdkdemo.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class TimeSync implements Runnable {
 
-    private static final String NETWORK_TIME = "network_time";
-    private static final String ELAPSED_TIME = "elapsed_time";
+    private static final String NETWORK_TIME = "log.tag.network_time";
+    private static final String ELAPSED_TIME = "log.tag.elapsed_time";
+
+    private static final String GET_NETWORK_TIME = "getprop " + NETWORK_TIME;
+    private static final String SET_NETWORK_TIME = "setprop " + NETWORK_TIME
+            + " ";
+    private static final String GET_ELAPSED_TIME = "getprop " + ELAPSED_TIME;
+    private static final String SET_ELAPSED_TIME = "setprop " + ELAPSED_TIME
+            + " ";
+
     private static final SimpleDateFormat sdf = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss SSS");
     private static TimeSync sTimeSync;
@@ -67,14 +80,20 @@ public class TimeSync implements Runnable {
     private void saveNetworkTimeAndElapsedTime(long networkTime,
             long elapsedTime) {
         synchronized (mObject) {
-            System.setProperty(NETWORK_TIME, String.valueOf(networkTime));
-            System.setProperty(ELAPSED_TIME, String.valueOf(elapsedTime));
+            // System.setProperty(NETWORK_TIME, String.valueOf(networkTime));
+            // System.setProperty(ELAPSED_TIME, String.valueOf(elapsedTime));
+            String script = null;
+            script = SET_NETWORK_TIME + networkTime;
+            setProp(script);
+            script = SET_ELAPSED_TIME + elapsedTime;
+            setProp(script);
         }
     }
 
     private long getSavedNetworkTime(long time) {
-        String networkTime = System.getProperty(NETWORK_TIME);
-        if (networkTime != null) {
+        // String networkTime = System.getProperty(NETWORK_TIME);
+        String networkTime = getProp(GET_NETWORK_TIME);
+        if (!TextUtils.isEmpty(networkTime)) {
             try {
                 time = Long.valueOf(networkTime).longValue();
             } catch (Exception e) {
@@ -88,8 +107,9 @@ public class TimeSync implements Runnable {
     }
 
     private long getSavedElapsedTime(long time) {
-        String elapsedTime = System.getProperty(ELAPSED_TIME);
-        if (elapsedTime != null) {
+        // String elapsedTime = System.getProperty(ELAPSED_TIME);
+        String elapsedTime = getProp(GET_ELAPSED_TIME);
+        if (!TextUtils.isEmpty(elapsedTime)) {
             try {
                 time = Long.valueOf(elapsedTime).longValue();
             } catch (Exception e) {
@@ -111,5 +131,39 @@ public class TimeSync implements Runnable {
                     + syncdNetworkTime;
             return networkNow;
         }
+    }
+
+    private boolean setProp(String script) {
+        try {
+            Log.d("taugin2", "setProp script = " + script);
+            Process p = Runtime.getRuntime().exec("sh");
+            OutputStream os = p.getOutputStream();
+            os.write(script.getBytes());
+            os.write("\n".getBytes());
+            os.write("exit\n".getBytes());
+            p.waitFor();
+            Log.d("taugin2", "exitValue = " + p.exitValue());
+            return p.exitValue() == 0;
+        } catch (IOException e) {
+            Log.d("taugin2", "setProp error : " + e);
+        } catch (InterruptedException e) {
+            Log.d("taugin2", "setProp error : " + e);
+        }
+        return false;
+    }
+
+    private String getProp(String script) {
+        try {
+            Log.d("taugin2", "getProp script = " + script);
+            Process p = Runtime.getRuntime().exec(script);
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    p.getInputStream()));
+            String result = br.readLine();
+            br.close();
+            return result;
+        } catch (IOException e) {
+            Log.d("taugin2", "getProp error : " + e);
+        }
+        return null;
     }
 }

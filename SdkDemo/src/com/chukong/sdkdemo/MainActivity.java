@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -61,8 +63,8 @@ public class MainActivity extends Activity implements OnClickListener,
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (buttonView.getId() == R.id.bindservice) {
             if (isChecked) {
-                mStop = false;
-                mHandler.post(mRunnable);
+                // mStop = false;
+                // mHandler.post(mRunnable);
                 Intent intent = new Intent(
                         "com.chukong.sdkdemo.action.REMOTE_SERVICE");
                 Log.d("taugin2", "bindService");
@@ -71,17 +73,18 @@ public class MainActivity extends Activity implements OnClickListener,
             } else {
                 Log.d("taugin2", "unbindService");
                 unbindService(mServiceConnection);
-                mStop = true;
+                // mStop = true;
             }
         }
     }
 
     public void onClick(View view) {
-        /*
-         * ShareDialog dialog = new ShareDialog(this); Bitmap bmp =
-         * BitmapFactory.decodeResource(getResources(), R.drawable.icon);
-         * dialog.setLogoBmp(bmp); dialog.show();
-         */
+        ShareDialog dialog = new ShareDialog(this);
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+                R.drawable.icon);
+        dialog.setLogoBmp(bmp);
+        dialog.show();
+
         if (view.getId() == R.id.sync_time) {
             if (mTimeSyncControl != null) {
                 try {

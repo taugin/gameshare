@@ -72,7 +72,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
     private ImageView mQRImage = null;
 
     public ShareDialog(Context context) {
-        super(context, THEME_LIGHT);
+        super(context, THEME_LIGHT_FULLSCREEN);
         setCanceledOnTouchOutside(false);
         setOnDismissListener(this);
     }
