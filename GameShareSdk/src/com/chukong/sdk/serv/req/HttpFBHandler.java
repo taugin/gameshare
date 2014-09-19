@@ -33,7 +33,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -63,13 +62,16 @@ public class HttpFBHandler implements HttpRequestHandler {
     }
 
     @Override
-    public void handle(HttpRequest request, HttpResponse response, HttpContext context)
-            throws HttpException, IOException {
-        String target = URLDecoder.decode(request.getRequestLine().getUri(), Config.ENCODING);
+    public void handle(HttpRequest request, HttpResponse response,
+            HttpContext context) throws HttpException, IOException {
+        String target = URLDecoder.decode(request.getRequestLine().getUri(),
+                Config.ENCODING);
         Header requestHost = request.getFirstHeader("Host");
-        InetAddress ipAddress = (InetAddress) context.getAttribute("remote_ip_address");
+        InetAddress ipAddress = (InetAddress) context
+                .getAttribute("remote_ip_address");
         Log.d(Log.TAG, "requestHost = " + requestHost);
-        Log.d(Log.TAG, "clientIpAddress = " + ipAddress.getHostAddress() + " , target = " + target);
+        Log.d(Log.TAG, "clientIpAddress = " + ipAddress.getHostAddress()
+                + " , target = " + target);
         String requestMethod = null;
         RequestLine requestLine = request.getRequestLine();
         if (requestLine != null) {
@@ -81,13 +83,23 @@ public class HttpFBHandler implements HttpRequestHandler {
         File file;
         if (target.equals("/view.html")) {
             file = new File(this.webRoot);
-        } else if (!target.startsWith(Config.SERV_ROOT_DIR) && !target.startsWith(this.webRoot)
-                && !target.startsWith("/data/app") && !target.startsWith("/system/app")) {
+        } else if (!target.startsWith(Config.SERV_ROOT_DIR)
+                && !target.startsWith(this.webRoot)
+                && !target.startsWith("/data/app")
+                && !target.startsWith("/system/app")) {
             String ip = mCommonUtil.getLocalIpAddress();
-            int port  = Config.PORT;
+            String hostAddress = requestHost != null ? requestHost.getValue()
+                    : null;
+            int port = Config.PORT;
             String localHost = ip + ":" + port;
-            Log.d(Log.TAG, "localHost = " + (localHost) + " , requestMethod = " + requestMethod);
-            if ((localHost != null && localHost.equals(requestHost)) || (requestMethod != null && requestMethod.equalsIgnoreCase("POST"))) {
+            if (hostAddress != null && hostAddress.contains("127.0.0.1")) {
+                ip = "http://127.0.0.1";
+            }
+            Log.d(Log.TAG, "localHost = " + (localHost) + " , requestMethod = "
+                    + requestMethod);
+            if ((localHost != null && localHost.equals(requestHost))
+                    || (requestMethod != null && requestMethod
+                            .equalsIgnoreCase("POST"))) {
                 response.setStatusCode(HttpStatus.SC_FORBIDDEN);
                 response.setEntity(resp403(request));
             } else {
@@ -95,12 +107,13 @@ public class HttpFBHandler implements HttpRequestHandler {
                 if (!TextUtils.isEmpty(ip)) {
                     ip = ip + ":" + port;
                 } else {
-                    ip = "http://10.0.0.115:"  + port;
+                    ip = "http://10.0.0.115:" + port;
                 }
                 if (!ip.startsWith("http")) {
                     ip = "http://" + ip;
                 }
                 ip += "/view.html";
+                Log.d(Log.TAG, "Redirect ipaddress : " + ip);
                 response.addHeader("Location", ip);
             }
             return;
@@ -132,7 +145,8 @@ public class HttpFBHandler implements HttpRequestHandler {
         Progress.clear();
     }
 
-    private HttpEntity respFile(HttpRequest request, File file) throws IOException {
+    private HttpEntity respFile(HttpRequest request, File file)
+            throws IOException {
         return mViewFactory.renderFile(request, file);
     }
 
@@ -144,7 +158,8 @@ public class HttpFBHandler implements HttpRequestHandler {
         return mViewFactory.renderTemp(request, "404.html");
     }
 
-    private HttpEntity respView(HttpRequest request, File dir) throws IOException {
+    private HttpEntity respView(HttpRequest request, File dir)
+            throws IOException {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("dirpath", dir.getPath()); // 目录路径
         data.put("hasParent", !isSamePath(dir.getPath(), this.webRoot)); // 是否有上级目录
@@ -174,7 +189,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         int len = fileRows.size();
         List<TwoColumn> twoColumns = new ArrayList<TwoColumn>();
         TwoColumn twoColumn = null;
-        for (index = 0; index < len; index+=2) {
+        for (index = 0; index < len; index += 2) {
             twoColumn = new TwoColumn();
             if (index < len) {
                 twoColumn.fileRow1 = fileRows.get(index);
@@ -186,6 +201,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         }
         return twoColumns;
     }
+
     private File[] getFileFromDataApp() {
         Context context = GlobalInit.getInstance().getBaseContext();
         PackageManager pm = context.getPackageManager();
@@ -207,14 +223,15 @@ public class HttpFBHandler implements HttpRequestHandler {
         }
         return appFiles.toArray(new File[appFiles.size()]);
     }
+
     private boolean filterPackage(ApplicationInfo filterInfo) {
         if (filterInfo == null) {
             return true;
         }
         /*
-        if ((filterInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-            return true;
-        }*/
+         * if ((filterInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) { return
+         * true; }
+         */
         if (filterInfo.publicSourceDir.startsWith("/system")) {
             return true;
         }
@@ -234,9 +251,8 @@ public class HttpFBHandler implements HttpRequestHandler {
             }
         }
         if ("com.gtja.dzh".equals(packageName)
-            || "com.hexin.plat.android".equals(packageName)
-            || "com.eastmoney.android.berlin".equals(packageName)
-            ) {
+                || "com.hexin.plat.android".equals(packageName)
+                || "com.eastmoney.android.berlin".equals(packageName)) {
             return true;
         }
         if (thisPackage != null && thisPackage.equals(packageName)) {
@@ -244,6 +260,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         }
         return false;
     }
+
     private File getThisAppFile() {
         Context context = GlobalInit.getInstance().getBaseContext();
         PackageManager pm = context.getPackageManager();
@@ -261,6 +278,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         }
         return null;
     }
+
     private List<FileRow> buildFileRows(File dir) {
         File[] files = dir.listFiles(mFilter); // 目录列表
         if (files != null) {
@@ -318,7 +336,7 @@ public class HttpFBHandler implements HttpRequestHandler {
             size = mCommonUtil.readableFileSize(f.length());
             numSize = f.length();
         }
-        //desc = installed ? "Installed" : "UnInstalled";
+        // desc = installed ? "Installed" : "UnInstalled";
         desc = link;
         FileRow row = new FileRow(clazz, name, link, size, icon, desc, numSize);
         row.time = sdf.format(new Date(f.lastModified()));
@@ -345,7 +363,8 @@ public class HttpFBHandler implements HttpRequestHandler {
         if (pm == null) {
             return null;
         }
-        PackageInfo info = pm.getPackageArchiveInfo(apkFile, PackageManager.GET_ACTIVITIES);
+        PackageInfo info = pm.getPackageArchiveInfo(apkFile,
+                PackageManager.GET_ACTIVITIES);
         ApplicationInfo appInfo = null;
         if (info != null) {
             appInfo = info.applicationInfo;
@@ -359,13 +378,15 @@ public class HttpFBHandler implements HttpRequestHandler {
         }
         return null;
     }
+
     private String getApkIcon(String apkFile) {
         Context context = GlobalInit.getInstance().getBaseContext();
         PackageManager pm = context.getPackageManager();
         if (pm == null) {
             return null;
         }
-        PackageInfo info = pm.getPackageArchiveInfo(apkFile, PackageManager.GET_ACTIVITIES);
+        PackageInfo info = pm.getPackageArchiveInfo(apkFile,
+                PackageManager.GET_ACTIVITIES);
         ApplicationInfo appInfo = null;
         if (info != null) {
             appInfo = info.applicationInfo;
@@ -377,14 +398,16 @@ public class HttpFBHandler implements HttpRequestHandler {
                     if (drawable instanceof BitmapDrawable) {
                         bmp = ((BitmapDrawable) drawable).getBitmap();
                     } else {
-                        //  TODO : 缺少默认图标
-                        //bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_default);
+                        // TODO : 缺少默认图标
+                        // bmp =
+                        // BitmapFactory.decodeResource(context.getResources(),
+                        // R.drawable.icon_default);
                     }
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bmp.compress(Bitmap.CompressFormat.PNG, 100, baos);
                     byte iconbyte[] = baos.toByteArray();
                     return Base64.encodeBytes(iconbyte);
-                } catch(Exception e) {
+                } catch (Exception e) {
                     Log.d(Log.TAG, "e = " + e);
                 }
             }
@@ -407,6 +430,7 @@ public class HttpFBHandler implements HttpRequestHandler {
             }
         });
     }
+
     // According to file size
     private void sortList(ArrayList<FileRow> fileRows) {
         Collections.sort(fileRows, new Comparator<FileRow>() {
@@ -427,12 +451,14 @@ public class HttpFBHandler implements HttpRequestHandler {
             return false;
         }
     };
+
     private void printRequest(HttpRequest request) {
         Header headers[] = request.getAllHeaders();
         for (Header h : headers) {
             Log.d(Log.TAG, h.getName() + " : " + h.getValue());
         }
     }
+
     private void printResponse(HttpResponse res) {
         Header headers[] = res.getAllHeaders();
         for (Header h : headers) {

@@ -2,32 +2,34 @@ package com.chukong.sdkdemo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
+import cn.cmgame.billing.api.GameInterface;
+import cn.cmgame.billing.api.GameInterface.GameExitCallback;
 
-import com.chukong.sdk.ShareDialog;
+import com.chukong.sdk.common.Log;
 import com.chukong.sdkdemo.service.TimeSyncControl;
 
 public class MainActivity extends Activity implements OnClickListener,
         OnCheckedChangeListener {
-
+    private static final int THEME_LIGHT_FULLSCREEN = android.R.style.Theme_Light_NoTitleBar_Fullscreen;
+    private static final int THEME_HOLO_FULLSCREEN = android.R.style.Theme_NoTitleBar_Fullscreen;
+    private static final int THEME_LIGHT = android.R.style.Theme_Light_NoTitleBar;
     private static SimpleDateFormat sdf = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
 
@@ -39,9 +41,34 @@ public class MainActivity extends Activity implements OnClickListener,
     private TimeSyncControl mTimeSyncControl = null;
     private boolean mStop = false;
 
+    private boolean enterAppAnimation(Intent intent) {
+        boolean needAnimation = true;
+        if (!needAnimation) {
+            return false;
+        }
+        if (intent != null) {
+            Set<String> categtoies = intent.getCategories();
+            if (Intent.ACTION_MAIN.equals(intent.getAction())
+                    && (categtoies != null && categtoies
+                            .contains(Intent.CATEGORY_LAUNCHER))) {
+                Intent newIntent = new Intent(this,
+                        cn.cmgame.billing.ui.GameOpenActivity.class);
+                startActivity(newIntent);
+                setTheme(THEME_HOLO_FULLSCREEN);
+                finish();
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("taugin", "onCreate");
+        if (enterAppAnimation(getIntent())) {
+            return;
+        }
         setContentView(R.layout.activity_main);
         mNetworkTime = (Button) findViewById(R.id.network_time);
         mLocalTime = (Button) findViewById(R.id.local_time);
@@ -53,19 +80,33 @@ public class MainActivity extends Activity implements OnClickListener,
     }
 
     @Override
+    public void onBackPressed() {
+        GameInterface.exit(this, new GameExitCallback() {
+            @Override
+            public void onConfirmExit() {
+                finish();
+            }
+
+            @Override
+            public void onCancelExit() {
+            }
+        });
+    }
+
+    @Override
     protected void onDestroy() {
-        if (mBind.isChecked()) {
+        super.onDestroy();
+        if (mBind != null && mBind.isChecked()) {
             mBind.setChecked(false);
         }
-        super.onDestroy();
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (buttonView.getId() == R.id.bindservice) {
             if (isChecked) {
-                // mStop = false;
-                // mHandler.post(mRunnable);
+                mStop = false;
+                mHandler.post(mRunnable);
                 Intent intent = new Intent(
                         "com.chukong.sdkdemo.action.REMOTE_SERVICE");
                 Log.d("taugin2", "bindService");
@@ -74,18 +115,12 @@ public class MainActivity extends Activity implements OnClickListener,
             } else {
                 Log.d("taugin2", "unbindService");
                 unbindService(mServiceConnection);
-                // mStop = true;
+                mStop = true;
             }
         }
     }
 
     public void onClick(View view) {
-        ShareDialog dialog = new ShareDialog(this);
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(),
-                R.drawable.icon);
-        dialog.setLogoBmp(bmp);
-        dialog.show();
-
         if (view.getId() == R.id.sync_time) {
             if (mTimeSyncControl != null) {
                 try {
@@ -94,6 +129,12 @@ public class MainActivity extends Activity implements OnClickListener,
                     e.printStackTrace();
                 }
             }
+        } else if (view.getId() == R.id.test) {
+            /**
+             * ShareDialog dialog = new ShareDialog(this); Bitmap bmp =
+             * BitmapFactory.decodeResource(getResources(), R.drawable.icon);
+             * dialog.setLogoBmp(bmp); dialog.show();
+             */
         }
     }
 

@@ -10,6 +10,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        System.loadLibrary("megjb");
         Log.d("taugin", "sdkdemo onCreate = " + getCurProcessName(this));
     }
 

@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name="App"
@@ -28,6 +29,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.chukong.sdkdemo.CocosTempActivity" />
+                <activity android:name="cn.cmgame.billing.ui.GameOpenActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation="sensor">
+            <!-- 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+             -->
+            <intent-filter>
+                <action android:name="android.intent.action.CHINAMOBILE_OMS_GAME" />
+                <category android:name="android.intent.category.CHINAMOBILE_GAMES" />
+            </intent-filter>
+        </activity>
+
+
         <service android:name="com.chukong.sdk.service.WebService" />
         <service android:name="com.chukong.sdkdemo.service.RemoteService"
             android:process=":remote"
