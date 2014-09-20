@@ -117,7 +117,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
             editor.putString(Constants.KEY_SAVED_SSID, oldConfig.SSID);
             editor.putString(Constants.KEY_SAVED_PASS, oldConfig.preSharedKey);
             editor.putInt(Constants.KEY_SECURITY_TYPE, WifiApManager.getSecurityTypeIndex(oldConfig));
-            editor.apply();
+            editor.commit();
             String SSID = "Chukong-Share";
             WifiConfiguration config = WifiApManager.getInstance(getContext()).getConfig(SSID, null, WifiApManager.OPEN_INDEX);
             Log.d(Log.TAG, "config =  " + config.SSID);

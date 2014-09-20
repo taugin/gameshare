@@ -18,6 +18,7 @@ package org.join.zxing.camera.open;
 
 import android.annotation.TargetApi;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -35,6 +36,21 @@ public final class GingerbreadOpenCameraInterface implements OpenCameraInterface
     @Override
     public Camera open() {
 
+        Camera camera;
+        if (Build.VERSION.SDK_INT <= 8) {
+            camera = openCamera2_2();
+        } else {
+            camera = openCamera();
+        }
+        return camera;
+    }
+
+    private Camera openCamera2_2() {
+        Camera camera = Camera.open();
+        return camera;
+    }
+
+    private Camera openCamera() {
         int numCameras = Camera.getNumberOfCameras();
         if (numCameras == 0) {
             Log.w(TAG, "No cameras!");
@@ -50,7 +66,6 @@ public final class GingerbreadOpenCameraInterface implements OpenCameraInterface
             }
             index++;
         }
-
         Camera camera;
         if (index < numCameras) {
             Log.i(TAG, "Opening camera #" + index);
@@ -59,8 +74,6 @@ public final class GingerbreadOpenCameraInterface implements OpenCameraInterface
             Log.i(TAG, "No camera facing back; returning camera #0");
             camera = Camera.open(0);
         }
-
         return camera;
     }
-
 }

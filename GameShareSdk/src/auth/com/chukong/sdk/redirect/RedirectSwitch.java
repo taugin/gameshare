@@ -53,7 +53,7 @@ public class RedirectSwitch {
         }
         if (iptablesResult != null) {
             if (iptablesResult.contains(Constants.IPTABLES_SUCCESS)) {
-                PreferenceManager.getDefaultSharedPreferences(mContext).edit().putBoolean(Constants.REDIRECT_STATUS, redirect).apply();
+                PreferenceManager.getDefaultSharedPreferences(mContext).edit().putBoolean(Constants.REDIRECT_STATUS, redirect).commit();
                 return true;
             }
         }
