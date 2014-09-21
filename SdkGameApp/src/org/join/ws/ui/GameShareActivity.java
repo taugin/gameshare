@@ -14,6 +14,7 @@ import org.join.zxing.encode.QRCodeEncoder;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -76,6 +77,8 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
 
     private boolean needResumeServer = false;
 
+    private ProgressDialog mProgressDialog = null;
+
     private static final int W_START = 0x0101;
     private static final int W_STOP = 0x0102;
     private static final int W_ERROR = 0x0103;
@@ -85,6 +88,9 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
     private static final int DLG_TEMP_NOT_FOUND = 0x0203;
     private static final int DLG_SCAN_RESULT = 0x0204;
 
+    private static final int DISMISS_PROGRESS_DLG = 0x0205;
+    private static final int DLG_PROGRESS_TIMEOUT = 30 * 1000;
+
     private String lastResult;
 
     private Handler mHandler = new Handler() {
@@ -93,7 +99,7 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case W_START: {
-                //setUrlText(ipAddr);
+                setUrlText(ipAddr);
                 qrCodeView.setVisibility(View.VISIBLE);
                 break;
             }
@@ -118,6 +124,9 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
                     break;
                 }
                 return;
+            case DISMISS_PROGRESS_DLG:
+                dismissProgressDlg();
+                break;
             }
         }
 
@@ -135,7 +144,7 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
         WSReceiver.register(this, this);
         WifiApStateReceiver.register(this, this);
         setWifiApEnabled(true);
-        setUrlText("192.168.43.1");
+        showProgressDlg(true);
     }
 
     private void initObjs(Bundle state) {
@@ -187,7 +196,6 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
     protected void onDestroy() {
         super.onDestroy();
         doUnbindService();
-        setWifiApEnabled(false);
         WifiApStateReceiver.unregister(this);
         WSReceiver.unregister(this);
         WSApplication.getInstance().stopWsService();
@@ -201,7 +209,9 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
     
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        //super.onBackPressed();
+        setWifiApEnabled(false);
+        showProgressDlg(false);
     }
 
     @Override
@@ -232,6 +242,7 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
     @Override
     public void onStarted() {
         Log.d(Log.TAG, "W_START");
+        mHandler.sendEmptyMessage(DISMISS_PROGRESS_DLG);
         mHandler.sendEmptyMessage(W_START);
     }
 
@@ -239,6 +250,8 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
     public void onStopped() {
         Log.d(Log.TAG, "W_STOP");
         mHandler.sendEmptyMessage(W_STOP);
+        mHandler.sendEmptyMessage(DISMISS_PROGRESS_DLG);
+        finish();
     }
 
     @Override
@@ -485,5 +498,23 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
         IntentFilter filter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
         filter.addDataScheme("package");
         registerReceiver(receiver, filter);
+    }
+
+    private void showProgressDlg(boolean start) {
+        String message = getResources().getString(start ? R.string.starting_server : R.string.stoping_server);
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setMessage(message);
+        }
+        mProgressDialog.show();
+        mHandler.sendEmptyMessageDelayed(DISMISS_PROGRESS_DLG, DLG_PROGRESS_TIMEOUT);
+    }
+    private void dismissProgressDlg() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 }
