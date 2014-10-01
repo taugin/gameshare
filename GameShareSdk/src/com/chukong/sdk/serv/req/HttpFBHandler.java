@@ -6,6 +6,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,10 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.chukong.sdk.Constants.Config;
 import com.chukong.sdk.GlobalInit;
@@ -55,6 +59,7 @@ public class HttpFBHandler implements HttpRequestHandler {
     private static final String TAG_DOWNLOAD = "/download";
     private static final String TAG_APPFILE = "/appfile";
     private static final String TAG_APPLIST = "/applist";
+    private List<FileRow> fileRows = null;
     private CommonUtil mCommonUtil = CommonUtil.getSingleton();
     private ViewFactory mViewFactory = ViewFactory.getSingleton();
 
@@ -108,7 +113,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         if (target.startsWith(TAG_APPFILE)) {
             target = target.substring(TAG_APPFILE.length());
             file = new File(target);
-            processFile(file, request, response);
+            processDownloadFile(file, request, response);
             return ;
         }
         //Others redirect to proper location
@@ -146,6 +151,48 @@ public class HttpFBHandler implements HttpRequestHandler {
         //printResponse(response);
         Progress.clear();
     }
+    private void processDownloadFile(File file, HttpRequest request, HttpResponse response)
+            throws HttpException, IOException {
+        Log.d(Log.TAG, "file = " + file);
+        HttpEntity entity = null;
+        String downloadName = null;
+        String contentType = "text/html;charset=" + Config.ENCODING;
+        if (file != null) {
+            if (!file.exists()) { // 不存在
+                response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+                entity = resp404(request);
+            } else if (file.canRead()) { // 可读
+                response.setStatusCode(HttpStatus.SC_OK);
+                if (file.isDirectory()) {
+                    entity = respView(request, file);
+                } else {
+                    entity = respFile(request, file);
+                    downloadName = getApkName(file.getAbsolutePath());
+                    contentType = entity.getContentType().getValue();
+                }
+            } else { // 不可读
+                response.setStatusCode(HttpStatus.SC_FORBIDDEN);
+                entity = resp403(request);
+            }
+        }
+
+        Log.d(Log.TAG, "downloadName = " + downloadName);
+        if (!TextUtils.isEmpty(downloadName)) {
+            String filePath = file.getAbsolutePath();
+            String ext = MimeTypeMap.getFileExtensionFromUrl(filePath);
+            String urlEncodedName = URLEncoder.encode(downloadName, "utf-8");
+            urlEncodedName += ".";
+            urlEncodedName += ext;
+            String value = "attatchment;filename=" + urlEncodedName;
+            response.setHeader("Content-Disposition", value);
+        }
+        response.setHeader("Content-Type", contentType);
+        response.setEntity(entity);
+        // Log.d(Log.TAG, "contentType = " + contentType);
+        //printResponse(response);
+        Progress.clear();
+    }
+
     private HttpEntity respFile(HttpRequest request, File file)
             throws IOException {
         return mViewFactory.renderFile(request, file);
@@ -164,7 +211,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("dirpath", dir.getPath()); // 目录路径
         data.put("hasParent", !isSamePath(dir.getPath(), this.webRoot)); // 是否有上级目录
-        List<FileRow> fileRows = buildFileRows(dir);
+        fileRows = buildFileRows(dir);
         data.put("fileRows", fileRows); // 文件行信息集合
         data.put("rowsCount", fileRows.size());
         return mViewFactory.renderTemp(request, "view.html", data);
@@ -469,6 +516,19 @@ public class HttpFBHandler implements HttpRequestHandler {
 
     private void redirectToDownload(String target, String hostAddress, HttpResponse response) {
         Log.d(Log.TAG, "**********************************************************************target = " + target);
+        final Context context = GlobalInit.getInstance().getBaseContext();
+        String fileName = getApkName(target);
+        String ext = MimeTypeMap.getFileExtensionFromUrl(target);
+        fileName += ".";
+        fileName += ext;
+        final String text = fileName + " Downloading ...";
+        Handler handler = new Handler(context.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+            }
+        });
         String ip = mCommonUtil.getLocalIpAddress();
         int port = Config.PORT;
         String localHost = ip + ":" + port;
