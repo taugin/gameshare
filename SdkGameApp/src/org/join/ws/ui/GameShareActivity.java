@@ -430,7 +430,7 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
             qrCodeEncoder.setLogoBmp(bmp);
             Bitmap bitmap = qrCodeEncoder.encodeAsBitmap();
             if (bitmap == null) {
-                Log.w(TAG, "Could not encode barcode");
+                Log.d(TAG, "Could not encode barcode");
             } else {
                 qrCodeView.setImageBitmap(bitmap);
             }

@@ -4,12 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 public class Log {
 
     public static final String TAG = "taugin";
     private static final boolean DEBUG = true;
+    private static final boolean PRIVATE_TAG = true;
 
     private static Log sLog;
     private Context mContext;
@@ -26,7 +26,7 @@ public class Log {
     public static void d(String tag, String message) {
         if (DEBUG) {
             String extraString = getMethodNameAndLineNumber();
-            tag = privateTag() ? tag : getTag();
+            tag = PRIVATE_TAG ? tag : getTag();
             android.util.Log.d(tag, extraString + message);
         }
     }
@@ -34,7 +34,7 @@ public class Log {
     public static void v(String tag, String message) {
         if (DEBUG) {
             String extraString = getMethodNameAndLineNumber();
-            tag = privateTag() ? tag : getTag();
+            tag = PRIVATE_TAG ? tag : getTag();
             android.util.Log.v(tag, extraString + message);
         }
     }
@@ -42,50 +42,35 @@ public class Log {
     public static void i(String tag, String message) {
         if (DEBUG) {
             String extraString = getMethodNameAndLineNumber();
-            tag = privateTag() ? tag : getTag();
+            tag = PRIVATE_TAG ? tag : getTag();
             android.util.Log.i(tag, extraString + message);
-        }
-    }
-
-    public static void w(String tag, String message) {
-        if (DEBUG) {
-            String extraString = getMethodNameAndLineNumber();
-            tag = privateTag() ? tag : getTag();
-            android.util.Log.w(tag, extraString + message);
         }
     }
 
     public static void e(String tag, String message) {
         if (DEBUG) {
             String extraString = getMethodNameAndLineNumber();
-            tag = privateTag() ? tag : getTag();
+            tag = PRIVATE_TAG ? tag : getTag();
             android.util.Log.e(tag, extraString + message);
         }
     }
 
-    private static boolean privateTag() {
-        String tag = System.getProperty("persist.sys.log", "1");
-        if (TextUtils.isEmpty(tag)) {
-            return true;
-        } else {
-            return tag.equals("1") ? true : false;
-        }
-    }
+    
     private static String getMethodNameAndLineNumber() {
         StackTraceElement element[] = Thread.currentThread().getStackTrace();
         if (element != null && element.length >= 4) {
             String methodName = element[4].getMethodName();
             int lineNumber = element[4].getLineNumber();
-            long threadId = Thread.currentThread().getId();
+            String className = element[4].getClassName();
             return String.format("%s.%s : %d ---> ", getClassName(), methodName, lineNumber);
         }
         return null;
     }
     
-    private static String getTag() {
+    private static String getClassName() {
         StackTraceElement element[] = Thread.currentThread().getStackTrace();
-        if (element != null && element.length >= 4) {
-            String className = element[4].getClassName();
+        if (element != null && element.length >= 5) {
+            String className = element[5].getClassName();
             if (className == null) {
                 return null;
             }
@@ -102,10 +87,10 @@ public class Log {
         }
         return null;
     }
-    private static String getClassName() {
+    private static String getTag() {
         StackTraceElement element[] = Thread.currentThread().getStackTrace();
         if (element != null && element.length >= 4) {
-            String className = element[5].getClassName();
+            String className = element[4].getClassName();
             if (className == null) {
                 return null;
             }

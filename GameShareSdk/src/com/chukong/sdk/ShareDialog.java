@@ -200,7 +200,7 @@ public class ShareDialog extends Dialog implements OnWifiApStateChangeListener, 
             qrCodeEncoder.setLogoBmp(mLogoBmp);
             Bitmap bitmap = qrCodeEncoder.encodeAsBitmap();
             if (bitmap == null) {
-                Log.w(Log.TAG, "Could not encode barcode");
+                Log.d(Log.TAG, "Could not encode barcode");
             } else {
                 mQRImage.setImageBitmap(bitmap);
             }

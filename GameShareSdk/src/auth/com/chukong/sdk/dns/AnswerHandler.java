@@ -44,7 +44,7 @@ public class AnswerHandler {
             type = Type.A;
         }
         String answer = CommonUtil.getSingleton().getLocalIpAddress();
-        Log.d(Log.TAG, "type = " + type + " , answer = " + answer);
+        // Log.d(Log.TAG, "type = " + type + " , answer = " + answer);
         if (answer != null) {
             try {
                 response.getMessage().addRecord(question, Section.QUESTION);
@@ -56,7 +56,7 @@ public class AnswerHandler {
                 Record record = builder.toRecord();
                 response.getMessage().addRecord(record, Section.ANSWER);
                 response.setHasRecord(true);
-                Log.d(Log.TAG, response.getMessage().toString());
+                // Log.d(Log.TAG, response.getMessage().toString());
                 return false;
             } catch (Exception e) {
                 Log.d(Log.TAG, "AnswerHandler handling exception " + e.getMessage());
