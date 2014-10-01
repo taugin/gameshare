@@ -85,6 +85,7 @@ public class MainActivity extends Activity implements OnClickListener,
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         /*
         GameInterface.exit(this, new GameExitCallback() {
             @Override
