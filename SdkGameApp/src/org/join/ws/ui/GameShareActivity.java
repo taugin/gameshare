@@ -99,7 +99,7 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case W_START: {
-                setUrlText(ipAddr);
+                setUrlTextAndGenerateQRImage();
                 qrCodeView.setVisibility(View.VISIBLE);
                 break;
             }
@@ -163,14 +163,16 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
             needResumeServer = state.getBoolean("needResumeServer", false);
             boolean isRunning = state.getBoolean("isRunning", false);
             if (isRunning) {
-                setUrlText(ipAddr);
+                setUrlTextAndGenerateQRImage();
                 doBindService();
             }
         }
     }
 
-    private void setUrlText(String ipAddr) {
+    private void setUrlTextAndGenerateQRImage() {
+        ipAddr = mCommonUtil.getLocalIpAddress();
         String url = "http://" + ipAddr + ":" + Config.PORT + "/";
+        Log.d(Log.TAG, "url = " + url);
         generateQRCode(url);
     }
 
@@ -395,7 +397,6 @@ public class GameShareActivity extends WebServActivity implements OnClickListene
         if (state == WifiApStateReceiver.WIFI_AP_STATE_ENABLED) {
             WifiConfiguration config = WifiApManager.getInstance(this).getWifiApConfiguration();
             if (config != null) {
-                ipAddr = mCommonUtil.getLocalIpAddress();
                 doBindService();
             }
         } else if (state == WifiApStateReceiver.WIFI_AP_STATE_DISABLED) {
