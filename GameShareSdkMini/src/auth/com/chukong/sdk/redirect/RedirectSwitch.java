@@ -5,11 +5,11 @@ import java.io.IOException;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
-import com.chukong.sdk.Constants;
 import com.chukong.sdk.common.CmdExecutor;
 import com.chukong.sdk.common.IptableSet;
 import com.chukong.sdk.common.Log;
-import com.chukong.sdk.util.CommonUtil;
+import com.chukong.sdkmini.Constants;
+import com.chukong.sdkmini.util.CommonUtil;
 
 public class RedirectSwitch {
     private boolean mRedirected = false;

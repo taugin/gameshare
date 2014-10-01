@@ -3,7 +3,7 @@ package com.chukong.sdk.common;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import com.chukong.sdk.Constants;
+import com.chukong.sdkmini.Constants;
 
 /** 
  * Internal thread used to execute scripts as root. 
