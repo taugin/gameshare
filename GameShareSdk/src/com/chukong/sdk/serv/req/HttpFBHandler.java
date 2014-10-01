@@ -52,6 +52,9 @@ import com.chukong.sdk.util.CommonUtil;
  */
 public class HttpFBHandler implements HttpRequestHandler {
 
+    private static final String TAG_DOWNLOAD = "/download";
+    private static final String TAG_APPFILE = "/appfile";
+    private static final String TAG_APPLIST = "/applist";
     private CommonUtil mCommonUtil = CommonUtil.getSingleton();
     private ViewFactory mViewFactory = ViewFactory.getSingleton();
 
@@ -64,6 +67,7 @@ public class HttpFBHandler implements HttpRequestHandler {
     @Override
     public void handle(HttpRequest request, HttpResponse response,
             HttpContext context) throws HttpException, IOException {
+        //printRequest(request);
         String target = URLDecoder.decode(request.getRequestLine().getUri(),
                 Config.ENCODING);
         Header requestHost = request.getFirstHeader("Host");
@@ -77,74 +81,71 @@ public class HttpFBHandler implements HttpRequestHandler {
         if (requestLine != null) {
             requestMethod = requestLine.getMethod();
         }
-        if (target.startsWith("/download")) {
-            target = target.substring("/download".length());
+        String hostAddress = requestHost != null ? requestHost.getValue()
+                : null;
+        if (target.startsWith(TAG_DOWNLOAD)) {
+            target = target.substring(TAG_DOWNLOAD.length());
+            redirectToDownload(target, hostAddress, response);
+            return ;
         }
-        File file;
-        if (target.equals("/view.html")) {
-            file = new File(this.webRoot);
-        } else if (!target.startsWith(Config.SERV_ROOT_DIR)
-                && !target.startsWith(this.webRoot)
-                && !target.startsWith("/data/app")
-                && !target.startsWith("/system/app")) {
-            String ip = mCommonUtil.getLocalIpAddress();
-            String hostAddress = requestHost != null ? requestHost.getValue()
-                    : null;
-            int port = Config.PORT;
-            String localHost = ip + ":" + port;
-            if (hostAddress != null && hostAddress.contains("127.0.0.1")) {
-                ip = "http://127.0.0.1";
-            }
-            Log.d(Log.TAG, "localHost = " + (localHost) + " , requestMethod = "
-                    + requestMethod);
-            if ((localHost != null && localHost.equals(requestHost))
-                    || (requestMethod != null && requestMethod
-                            .equalsIgnoreCase("POST"))) {
-                response.setStatusCode(HttpStatus.SC_FORBIDDEN);
-                response.setEntity(resp403(request));
-            } else {
-                response.setStatusCode(301);
-                if (!TextUtils.isEmpty(ip)) {
-                    ip = ip + ":" + port;
-                } else {
-                    ip = "http://10.0.0.115:" + port;
-                }
-                if (!ip.startsWith("http")) {
-                    ip = "http://" + ip;
-                }
-                ip += "/view.html";
-                Log.d(Log.TAG, "Redirect ipaddress : " + ip);
-                response.addHeader("Location", ip);
-            }
+
+        File file = null;
+        // Handle the app files
+        Log.d(Log.TAG, "webRoot = " + webRoot);
+        if (target.equals(TAG_APPLIST)) {
+            file = new File(webRoot);
+            processFile(file, request, response);
             return;
-        } else {
-            file = new File(target);
         }
-        HttpEntity entity;
+        // Handle the css/js files
+        Log.d(Log.TAG, "SERV_ROOT_DIR = " + Config.SERV_ROOT_DIR);
+        if (target.startsWith(Config.SERV_ROOT_DIR)){
+            file = new File(target);
+            processFile(file, request, response);
+            return ;
+        }
+        // Handle the app download
+        if (target.startsWith(TAG_APPFILE)) {
+            target = target.substring(TAG_APPFILE.length());
+            file = new File(target);
+            processFile(file, request, response);
+            return ;
+        }
+        //Others redirect to proper location
+        redirectToView(request, response,
+                hostAddress, requestMethod, requestHost);
+        Progress.clear();
+    }
+
+    private void processFile(File file, HttpRequest request, HttpResponse response)
+            throws HttpException, IOException {
+        Log.d(Log.TAG, "file = " + file);
+        HttpEntity entity = null;
         String contentType = "text/html;charset=" + Config.ENCODING;
-        if (!file.exists()) { // 不存在
-            response.setStatusCode(HttpStatus.SC_NOT_FOUND);
-            entity = resp404(request);
-        } else if (file.canRead()) { // 可读
-            response.setStatusCode(HttpStatus.SC_OK);
-            if (file.isDirectory()) {
-                entity = respView(request, file);
-            } else {
-                entity = respFile(request, file);
-                contentType = entity.getContentType().getValue();
+        if (file != null) {
+            if (!file.exists()) { // 不存在
+                response.setStatusCode(HttpStatus.SC_NOT_FOUND);
+                entity = resp404(request);
+            } else if (file.canRead()) { // 可读
+                response.setStatusCode(HttpStatus.SC_OK);
+                if (file.isDirectory()) {
+                    entity = respView(request, file);
+                } else {
+                    entity = respFile(request, file);
+                    contentType = entity.getContentType().getValue();
+                }
+            } else { // 不可读
+                response.setStatusCode(HttpStatus.SC_FORBIDDEN);
+                entity = resp403(request);
             }
-        } else { // 不可读
-            response.setStatusCode(HttpStatus.SC_FORBIDDEN);
-            entity = resp403(request);
         }
 
         response.setHeader("Content-Type", contentType);
         response.setEntity(entity);
         // Log.d(Log.TAG, "contentType = " + contentType);
-        // printRequest(response);
+        //printResponse(response);
         Progress.clear();
     }
-
     private HttpEntity respFile(HttpRequest request, File file)
             throws IOException {
         return mViewFactory.renderFile(request, file);
@@ -464,5 +465,64 @@ public class HttpFBHandler implements HttpRequestHandler {
         for (Header h : headers) {
             Log.d(Log.TAG, h.getName() + " : " + h.getValue());
         }
+    }
+
+    private void redirectToDownload(String target, String hostAddress, HttpResponse response) {
+        Log.d(Log.TAG, "**********************************************************************target = " + target);
+        String ip = mCommonUtil.getLocalIpAddress();
+        int port = Config.PORT;
+        String localHost = ip + ":" + port;
+        if (hostAddress != null && hostAddress.contains("127.0.0.1")) {
+            ip = "http://127.0.0.1";
+        }
+        response.setStatusCode(302);
+        if (!TextUtils.isEmpty(ip)) {
+            ip = ip + ":" + port;
+        } else {
+            ip = "http://10.0.0.115:" + port;
+        }
+        if (!ip.startsWith("http")) {
+            ip = "http://" + ip;
+        }
+        ip += TAG_APPFILE;
+        ip += target;
+        Log.d(Log.TAG, "Redirect ipaddress : " + ip);
+        response.addHeader("Location", ip);
+        response.addHeader("Expires", new Date().toGMTString());
+        response.addHeader("Cache-Control", "1");
+        Progress.clear();
+    }
+
+    private void redirectToView(HttpRequest request, HttpResponse response,
+            String hostAddress, String requestMethod, Header requestHost) throws HttpException, IOException{
+        String ip = mCommonUtil.getLocalIpAddress();
+        int port = Config.PORT;
+        String localHost = ip + ":" + port;
+        if (hostAddress != null && hostAddress.contains("127.0.0.1")) {
+            ip = "http://127.0.0.1";
+        }
+        Log.d(Log.TAG, "localHost = " + (localHost) + " , requestMethod = "
+                + requestMethod);
+        if ((localHost != null && localHost.equals(requestHost))
+                || (requestMethod != null && requestMethod
+                        .equalsIgnoreCase("POST"))) {
+            Log.d(Log.TAG, "HttpStatus.SC_FORBIDDEN : " + ip);
+            response.setStatusCode(HttpStatus.SC_FORBIDDEN);
+            response.setEntity(resp403(request));
+        } else {
+            response.setStatusCode(301);
+            if (!TextUtils.isEmpty(ip)) {
+                ip = ip + ":" + port;
+            } else {
+                ip = "http://10.0.0.115:" + port;
+            }
+            if (!ip.startsWith("http")) {
+                ip = "http://" + ip;
+            }
+            ip += TAG_APPLIST;
+            Log.d(Log.TAG, "Redirect ipaddress : " + ip);
+            response.addHeader("Location", ip);
+        }
+        Progress.clear();
     }
 }
