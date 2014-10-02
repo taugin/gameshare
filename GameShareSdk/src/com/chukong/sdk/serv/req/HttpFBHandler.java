@@ -27,7 +27,6 @@ import org.apache.http.RequestLine;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 
-import se.unlogic.standardutils.crypto.Base64;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -38,6 +37,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -49,6 +49,7 @@ import com.chukong.sdk.serv.req.objs.TwoColumn;
 import com.chukong.sdk.serv.support.Progress;
 import com.chukong.sdk.serv.view.ViewFactory;
 import com.chukong.sdk.util.CommonUtil;
+import com.google.gson.Gson;
 
 /**
  * @brief 目录浏览页面请求处理
@@ -59,7 +60,6 @@ public class HttpFBHandler implements HttpRequestHandler {
     private static final String TAG_DOWNLOAD = "/download";
     private static final String TAG_APPFILE = "/appfile";
     private static final String TAG_APPLIST = "/applist";
-    private List<FileRow> fileRows = null;
     private CommonUtil mCommonUtil = CommonUtil.getSingleton();
     private ViewFactory mViewFactory = ViewFactory.getSingleton();
 
@@ -211,7 +211,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("dirpath", dir.getPath()); // 目录路径
         data.put("hasParent", !isSamePath(dir.getPath(), this.webRoot)); // 是否有上级目录
-        fileRows = buildFileRows(dir);
+        List<FileRow> fileRows = buildFileRows(dir);
         data.put("fileRows", fileRows); // 文件行信息集合
         data.put("rowsCount", fileRows.size());
         return mViewFactory.renderTemp(request, "view.html", data);
@@ -277,9 +277,9 @@ public class HttpFBHandler implements HttpRequestHandler {
             return true;
         }
         /*
-         * if ((filterInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) { return
-         * true; }
-         */
+        if ((filterInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+            return true;
+        }*/
         if (filterInfo.publicSourceDir.startsWith("/system")) {
             return true;
         }
@@ -309,7 +309,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         return false;
     }
 
-    private File getThisAppFile() {
+    private File getSelfAppFile() {
         Context context = GlobalInit.getInstance().getBaseContext();
         PackageManager pm = context.getPackageManager();
         if (pm == null) {
@@ -334,9 +334,11 @@ public class HttpFBHandler implements HttpRequestHandler {
             ArrayList<FileRow> fileRows = new ArrayList<FileRow>();
             boolean localShare = GlobalInit.getInstance().getLocalShare();
             if (!localShare) {
+                // 显示/sdcard卡中的文件
                 for (File file : files) {
                     fileRows.add(buildFileRow(file, false));
                 }
+                // 显示设备中已经安装的应用
                 if (Config.SHOW_INSTALLED_APP) {
                     File appFiles[] = getFileFromDataApp();
                     sort(appFiles);
@@ -347,10 +349,11 @@ public class HttpFBHandler implements HttpRequestHandler {
                     }
                 }
             }
-            File thisFile = getThisAppFile();
-            if (thisFile != null) {
-                Log.d(Log.TAG, "thisFile = " + thisFile);
-                fileRows.add(0, buildFileRow(thisFile, true));
+            // 获取本应用
+            File seflFile = getSelfAppFile();
+            if (seflFile != null) {
+                Log.d(Log.TAG, "seflFile = " + seflFile);
+                fileRows.add(0, buildFileRow(seflFile, true));
             }
             sortList(fileRows);
             return fileRows;
@@ -405,6 +408,39 @@ public class HttpFBHandler implements HttpRequestHandler {
         return row;
     }
 
+    private ApkInfo getApkInfo(String apkFile) {
+        if (TextUtils.isEmpty(apkFile)) {
+            return null;
+        }
+        Context context = GlobalInit.getInstance().getBaseContext();
+        PackageManager pm = context.getPackageManager();
+        if (pm == null) {
+            return null;
+        }
+        ApkInfo apkInfo = new ApkInfo();
+        PackageInfo info = pm.getPackageArchiveInfo(apkFile,
+                PackageManager.GET_ACTIVITIES);
+        ApplicationInfo applicationInfo = null;
+        if (info != null) {
+            applicationInfo = info.applicationInfo;
+            if (applicationInfo != null) {
+                applicationInfo.publicSourceDir = apkFile;
+                CharSequence label = applicationInfo.loadLabel(pm);
+                if (label != null) {
+                    apkInfo.apkLabel = label.toString();
+                }
+                int index = apkFile.lastIndexOf("/");
+                if (index != -1) {
+                    apkInfo.apkName = apkFile.substring(index + 1);
+                }
+                apkInfo.packageName = applicationInfo.packageName;
+                String ext = MimeTypeMap.getFileExtensionFromUrl(apkFile);
+                apkInfo.apkDisName = apkInfo.apkLabel + "." + ext;
+                apkInfo.downloadTime = System.currentTimeMillis();
+            }
+        }
+        return apkInfo;
+    }
     private String getApkName(String apkFile) {
         Context context = GlobalInit.getInstance().getBaseContext();
         PackageManager pm = context.getPackageManager();
@@ -454,7 +490,7 @@ public class HttpFBHandler implements HttpRequestHandler {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bmp.compress(Bitmap.CompressFormat.PNG, 100, baos);
                     byte iconbyte[] = baos.toByteArray();
-                    return Base64.encodeBytes(iconbyte);
+                    return Base64.encodeToString(iconbyte, Base64.DEFAULT);
                 } catch (Exception e) {
                     Log.d(Log.TAG, "e = " + e);
                 }
@@ -515,20 +551,7 @@ public class HttpFBHandler implements HttpRequestHandler {
     }
 
     private void redirectToDownload(String target, String hostAddress, HttpResponse response) {
-        Log.d(Log.TAG, "**********************************************************************target = " + target);
-        final Context context = GlobalInit.getInstance().getBaseContext();
-        String fileName = getApkName(target);
-        String ext = MimeTypeMap.getFileExtensionFromUrl(target);
-        fileName += ".";
-        fileName += ext;
-        final String text = fileName + " Downloading ...";
-        Handler handler = new Handler(context.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-            }
-        });
+        downloadStatistics(target);
         String ip = mCommonUtil.getLocalIpAddress();
         int port = Config.PORT;
         String localHost = ip + ":" + port;
@@ -551,6 +574,24 @@ public class HttpFBHandler implements HttpRequestHandler {
         response.addHeader("Expires", new Date().toGMTString());
         response.addHeader("Cache-Control", "1");
         Progress.clear();
+    }
+
+    private void downloadStatistics(String target) {
+        Log.d(Log.TAG, "**********************************************************************target = " + target);
+        final Context context = GlobalInit.getInstance().getBaseContext();
+        final ApkInfo info = getApkInfo(target);
+        Handler handler = new Handler(context.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                String text = info != null ? info.toString() : "";
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+            }
+        });
+        //Log.d(Log.TAG, "\n" + info.toString());
+        String json = info.toJson();
+        Log.d(Log.TAG, "\n" + json);
+        Log.d(Log.TAG, "\n" + ApkInfo.fromJson(json));
     }
 
     private void redirectToView(HttpRequest request, HttpResponse response,
@@ -584,5 +625,32 @@ public class HttpFBHandler implements HttpRequestHandler {
             response.addHeader("Location", ip);
         }
         Progress.clear();
+    }
+}
+
+class ApkInfo {
+    String  apkLabel;
+    String  apkName;
+    String  apkDisName;
+    String  packageName;
+    long    downloadTime;
+
+    public String toString() {
+        String str = "";
+        str += "apkDisName   : " + apkDisName + "\n";
+        str += "packageName  : " + packageName + "\n";
+        str += "apkName      : " + apkName + "\n";
+        str += "downloadTime : " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(downloadTime)) + "\n";
+        return str;
+    }
+
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+    public static ApkInfo fromJson(String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, ApkInfo.class);
     }
 }
