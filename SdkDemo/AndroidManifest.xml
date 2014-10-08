@@ -46,7 +46,7 @@
         </activity>
 
 
-        <service android:name="com.chukong.sdk.service.WebService" />
+        <service android:name="com.chukong.sdkmini.service.WebService" />
         <service android:name="com.chukong.sdkdemo.service.RemoteService"
             android:process=":remote"
             android:exported="true">

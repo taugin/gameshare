@@ -88,7 +88,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.chukong.sdk.service.WebService" />
+        <service android:name="com.chukong.sdkmini.service.WebService" />
         <service
             android:name="org.join.ws.WSService"
             android:exported="false" >

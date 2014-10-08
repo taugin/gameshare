@@ -9,6 +9,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -19,11 +21,12 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
-import cn.cmgame.billing.api.GameInterface;
-import cn.cmgame.billing.api.GameInterface.GameExitCallback;
 
 import com.chukong.sdk.common.Log;
 import com.chukong.sdkdemo.service.TimeSyncControl;
+import com.chukong.sdkmini.ShareDialog;
+//import cn.cmgame.billing.api.GameInterface;
+//import cn.cmgame.billing.api.GameInterface.GameExitCallback;
 
 public class MainActivity extends Activity implements OnClickListener,
         OnCheckedChangeListener {
@@ -51,9 +54,9 @@ public class MainActivity extends Activity implements OnClickListener,
             if (Intent.ACTION_MAIN.equals(intent.getAction())
                     && (categtoies != null && categtoies
                             .contains(Intent.CATEGORY_LAUNCHER))) {
-                Intent newIntent = new Intent(this,
-                        cn.cmgame.billing.ui.GameOpenActivity.class);
-                startActivity(newIntent);
+                //Intent newIntent = new Intent(this,
+                //        cn.cmgame.billing.ui.GameOpenActivity.class);
+                // startActivity(newIntent);
                 setTheme(THEME_HOLO_FULLSCREEN);
                 finish();
                 return true;
@@ -66,9 +69,10 @@ public class MainActivity extends Activity implements OnClickListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("taugin", "onCreate");
+        /*
         if (enterAppAnimation(getIntent())) {
             return;
-        }
+        }*/
         setContentView(R.layout.activity_main);
         mNetworkTime = (Button) findViewById(R.id.network_time);
         mLocalTime = (Button) findViewById(R.id.local_time);
@@ -81,6 +85,8 @@ public class MainActivity extends Activity implements OnClickListener,
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
+        /*
         GameInterface.exit(this, new GameExitCallback() {
             @Override
             public void onConfirmExit() {
@@ -91,6 +97,7 @@ public class MainActivity extends Activity implements OnClickListener,
             public void onCancelExit() {
             }
         });
+        */
     }
 
     @Override
@@ -130,11 +137,9 @@ public class MainActivity extends Activity implements OnClickListener,
                 }
             }
         } else if (view.getId() == R.id.test) {
-            /**
-             * ShareDialog dialog = new ShareDialog(this); Bitmap bmp =
-             * BitmapFactory.decodeResource(getResources(), R.drawable.icon);
-             * dialog.setLogoBmp(bmp); dialog.show();
-             */
+             ShareDialog dialog = new ShareDialog(this); 
+             Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
+             dialog.setLogoBmp(bmp); dialog.show();
         }
     }
 

@@ -1,4 +1,4 @@
-package com.chukong.sdk.serv.req;
+package com.chukong.sdkmini.serv.req;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,14 +41,14 @@ import android.util.Base64;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import com.chukong.sdk.Constants.Config;
-import com.chukong.sdk.GlobalInit;
 import com.chukong.sdk.common.Log;
-import com.chukong.sdk.serv.req.objs.FileRow;
-import com.chukong.sdk.serv.req.objs.TwoColumn;
-import com.chukong.sdk.serv.support.Progress;
-import com.chukong.sdk.serv.view.ViewFactory;
-import com.chukong.sdk.util.CommonUtil;
+import com.chukong.sdkmini.Constants.Config;
+import com.chukong.sdkmini.GlobalInit;
+import com.chukong.sdkmini.serv.req.objs.FileRow;
+import com.chukong.sdkmini.serv.req.objs.TwoColumn;
+import com.chukong.sdkmini.serv.support.Progress;
+import com.chukong.sdkmini.serv.view.ViewFactory;
+import com.chukong.sdkmini.util.CommonUtil;
 import com.google.gson.Gson;
 
 /**
