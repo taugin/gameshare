@@ -7,9 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 
 import com.chukong.sdk.Constants.Config;
+import com.chukong.sdk.common.Log;
 
 /**
  * 应用广播接收者
@@ -86,6 +86,7 @@ public class WSReceiver extends BroadcastReceiver {
         if (mListener == null) {
             return;
         }
+        Log.d(Log.TAG, "action = " + action);
         if (ACTION_SERV_AVAILABLE.equals(action)) {
             mListener.onServAvailable();
         } else if (ACTION_SERV_UNAVAILABLE.equals(action)){ // ACTION_SERV_UNAVAILABLE

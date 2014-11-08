@@ -16,6 +16,7 @@ import com.chukong.sdk.dns.UDPSocketMonitor;
 import com.chukong.sdk.serv.WebServer;
 import com.chukong.sdk.serv.WebServer.OnWebServListener;
 import com.chukong.sdk.util.CommonUtil;
+import com.chukong.sdk.wifiap.WifiApManager;
 
 /**
  * @brief Web Service后台
@@ -212,10 +213,14 @@ public class WebService extends Service implements OnWebServListener {
     
     public void openServer() {
         openWebServer();
-        openDnsServer();
+        if (WifiApManager.getInstance(this).isWifiApEnabled()) {
+            openDnsServer();
+        }
     }
     public void closeServer() {
         closeWebServer();
-        closeDnsServer();
+        if (WifiApManager.getInstance(this).isWifiApEnabled()) {
+            closeDnsServer();
+        }
     }
 }

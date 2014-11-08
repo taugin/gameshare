@@ -9,9 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.chukong.sdk.Constants.Config;
+import com.chukong.sdk.common.Log;
 
 /**
  * @brief 网络状态接收者
@@ -20,7 +20,7 @@ import com.chukong.sdk.Constants.Config;
 public class NetworkReceiver extends BroadcastReceiver {
 
     static final String TAG = "NetworkReceiver";
-    static final boolean DEBUG = false || Config.DEV_MODE;
+    static final boolean DEBUG = true || Config.DEV_MODE;
 
     private static Map<Context, NetworkReceiver> mReceiverMap = new HashMap<Context, NetworkReceiver>();
 
@@ -36,7 +36,7 @@ public class NetworkReceiver extends BroadcastReceiver {
     public static void register(Context context, OnNetworkListener listener) {
         if (mReceiverMap.containsKey(context)) {
             if (DEBUG)
-                Log.d(TAG, "This context already registered.");
+                Log.d(Log.TAG, "This context already registered.");
             return;
         }
 
@@ -48,7 +48,7 @@ public class NetworkReceiver extends BroadcastReceiver {
         mReceiverMap.put(context, receiver);
 
         if (DEBUG)
-            Log.d(TAG, "NetworkReceiver registered.");
+            Log.d(Log.TAG, "NetworkReceiver registered.");
     }
 
     /**
@@ -61,7 +61,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             receiver = null;
 
             if (DEBUG)
-                Log.d(TAG, "NetworkReceiver unregistered.");
+                Log.d(Log.TAG, "NetworkReceiver unregistered.");
         }
     }
 
@@ -72,7 +72,7 @@ public class NetworkReceiver extends BroadcastReceiver {
         NetworkInfo info = conn.getActiveNetworkInfo();
 
         if (DEBUG)
-            Log.d(TAG, intent.getAction() + "\ngetActiveNetworkInfo: " + info);
+            Log.d(Log.TAG, intent.getAction() + "\ngetActiveNetworkInfo: " + info);
 
         if (info != null) {
             boolean isWifi = info.getType() == ConnectivityManager.TYPE_WIFI;
