@@ -168,13 +168,6 @@ public class WebServer extends Thread {
         this.mListener = mListener;
     }
     public String getAddressAndPort() {
-
-        try {
-            return InetAddress.getLocalHost() + ":" + port;
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
+        return CommonUtil.getSingleton().getLocalIpAddress() + ":" + port;
     }
 }

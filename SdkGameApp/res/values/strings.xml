@@ -106,4 +106,6 @@
     <string name="menu_show_coninfos">ConnInfo</string>
     <string name="starting_server">Starting Server&#8230;</string>
     <string name="stoping_server">Stoping Server&#8230;</string>
+    <string name="webserver_no_hotpot">Start WebServer No Hotpot</string>
+    <string name="webserver_with_hotpot">Start WebServer With Hotpot</string>
 </resources>

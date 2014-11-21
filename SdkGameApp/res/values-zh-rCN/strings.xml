@@ -108,4 +108,6 @@
 
     <string name="starting_server">开启服务&#8230;</string>
     <string name="stoping_server">关闭服务&#8230;</string>
+    <string name="webserver_no_hotpot">无热点开启服务</string>
+    <string name="webserver_with_hotpot">热点开启服务</string>
 </resources>

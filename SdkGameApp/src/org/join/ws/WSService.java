@@ -3,9 +3,9 @@ package org.join.ws;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.chukong.sdk.Constants.Config;
+import com.chukong.sdk.common.Log;
 import com.chukong.sdk.util.CommonUtil;
 
 /**
@@ -15,7 +15,7 @@ import com.chukong.sdk.util.CommonUtil;
 public class WSService extends Service implements OnNetworkListener, OnStorageListener {
 
     static final String TAG = "WSService";
-    static final boolean DEBUG = false || Config.DEV_MODE;
+    static final boolean DEBUG = true || Config.DEV_MODE;
 
     public static final String ACTION = "org.join.service.WS";
 
@@ -27,6 +27,7 @@ public class WSService extends Service implements OnNetworkListener, OnStorageLi
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(Log.TAG, "");
         NetworkReceiver.register(this, this);
         StorageReceiver.register(this, this);
 
@@ -76,7 +77,7 @@ public class WSService extends Service implements OnNetworkListener, OnStorageLi
 
     private void notifyWebServAvailable(boolean isAvailable) {
         if (DEBUG)
-            Log.d(TAG, "isAvailable:" + isAvailable);
+            Log.d(Log.TAG, "isAvailable:" + isAvailable);
         // Notify if web service is available.
         String action = isAvailable ? WSReceiver.ACTION_SERV_AVAILABLE
                 : WSReceiver.ACTION_SERV_UNAVAILABLE;
@@ -86,6 +87,7 @@ public class WSService extends Service implements OnNetworkListener, OnStorageLi
 
     private void notifyWebServAvailableChanged() {
         boolean isAvailable = isNetworkAvailable && isStorageMounted;
+        Log.d(Log.TAG, "isAvailable = " + isAvailable + " , isWebServAvailable = " + isWebServAvailable);
         if (isAvailable != isWebServAvailable) {
             notifyWebServAvailable(isAvailable);
             isWebServAvailable = isAvailable;
