@@ -11,6 +11,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpService;
 
 import com.chukong.sdk.Constants.Config;
+import com.chukong.sdk.common.Log;
 import com.chukong.sdk.serv.WebServer.OnWebServListener;
 
 /**
@@ -48,9 +49,7 @@ public class WorkerThread extends Thread {
             if (DEBUG)
                 System.err.println("Client closed connection");
         } catch (IOException e) {
-            if (DEBUG) {
-                System.err.println("I/O error: " + e.getMessage());
-            }
+            Log.d(Log.TAG, "I/O error: " + e);
             if (listener != null && e.getMessage() != null
                     && e.getMessage().startsWith("File not found >>> '")) {
                 listener.onError(WebServer.ERR_TEMP_NOT_FOUND);

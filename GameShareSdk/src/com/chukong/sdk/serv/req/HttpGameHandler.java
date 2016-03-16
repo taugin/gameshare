@@ -1,8 +1,8 @@
 package com.chukong.sdk.serv.req;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -37,7 +37,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -46,7 +45,7 @@ import com.chukong.sdk.GlobalInit;
 import com.chukong.sdk.common.Log;
 import com.chukong.sdk.serv.req.objs.ApkInfo;
 import com.chukong.sdk.serv.req.objs.FileRow;
-import com.chukong.sdk.serv.req.objs.TwoColumn;
+import com.chukong.sdk.serv.req.objs.GameViewInfo;
 import com.chukong.sdk.serv.support.Progress;
 import com.chukong.sdk.serv.view.ViewFactory;
 import com.chukong.sdk.util.CommonUtil;
@@ -55,24 +54,28 @@ import com.chukong.sdk.util.CommonUtil;
  * @brief 目录浏览页面请求处理
  * @author join
  */
-public class HttpFBHandler implements HttpRequestHandler {
+public class HttpGameHandler implements HttpRequestHandler {
 
     private static final String TAG_DOWNLOAD = "/download";
     private static final String TAG_APPFILE = "/appfile";
-    private static final String TAG_APPLIST = "/applist";
+    private static final String TAG_GAMES = "/games";
+    private static final String HTTP_VIEW = "games.html";
+
+
+
     private CommonUtil mCommonUtil = CommonUtil.getSingleton();
     private ViewFactory mViewFactory = ViewFactory.getSingleton();
 
     private String webRoot;
 
-    public HttpFBHandler(final String webRoot) {
+    public HttpGameHandler(final String webRoot) {
         this.webRoot = webRoot;
     }
 
     @Override
     public void handle(HttpRequest request, HttpResponse response,
             HttpContext context) throws HttpException, IOException {
-        //printRequest(request);
+        // printRequest(request);
         String target = URLDecoder.decode(request.getRequestLine().getUri(),
                 Config.ENCODING);
         Header requestHost = request.getFirstHeader("Host");
@@ -88,16 +91,24 @@ public class HttpFBHandler implements HttpRequestHandler {
         }
         String hostAddress = requestHost != null ? requestHost.getValue()
                 : null;
+
+        File file = null;
+
+        if (target.endsWith(".png") || target.endsWith(".jpeg")) {
+            file = new File(target);
+            processFile(file, request, response);
+            return ;
+        }
+
         if (target.startsWith(TAG_DOWNLOAD)) {
             target = target.substring(TAG_DOWNLOAD.length());
             redirectToDownload(target, hostAddress, response);
             return ;
         }
 
-        File file = null;
         // Handle the app files
         Log.d(Log.TAG, "webRoot = " + webRoot);
-        if (target.equals(TAG_APPLIST)) {
+        if (target.equals(TAG_GAMES)) {
             file = new File(webRoot);
             processFile(file, request, response);
             return;
@@ -134,7 +145,7 @@ public class HttpFBHandler implements HttpRequestHandler {
             } else if (file.canRead()) { // 可读
                 response.setStatusCode(HttpStatus.SC_OK);
                 if (file.isDirectory()) {
-                    entity = respView(request, file);
+                    entity = respGamesView(request, file);
                 } else {
                     entity = respFile(request, file);
                     contentType = entity.getContentType().getValue();
@@ -164,7 +175,7 @@ public class HttpFBHandler implements HttpRequestHandler {
             } else if (file.canRead()) { // 可读
                 response.setStatusCode(HttpStatus.SC_OK);
                 if (file.isDirectory()) {
-                    entity = respView(request, file);
+                    entity = respGamesView(request, file);
                 } else {
                     entity = respFile(request, file);
                     downloadName = getApkName(file.getAbsolutePath());
@@ -206,15 +217,17 @@ public class HttpFBHandler implements HttpRequestHandler {
         return mViewFactory.renderTemp(request, "404.html");
     }
 
-    private HttpEntity respView(HttpRequest request, File dir)
-            throws IOException {
+    private HttpEntity respGamesView(HttpRequest request, File dir) 
+            throws IOException{
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("dirpath", dir.getPath()); // 目录路径
-        data.put("hasParent", !isSamePath(dir.getPath(), this.webRoot)); // 是否有上级目录
-        List<FileRow> fileRows = buildFileRows(dir);
-        data.put("fileRows", fileRows); // 文件行信息集合
-        data.put("rowsCount", fileRows.size());
-        return mViewFactory.renderTemp(request, "view.html", data);
+        GameViewInfo gameViewInfo = getGameViewInfo(dir);
+        if (gameViewInfo != null) {
+            data.put("bannerTop", gameViewInfo.bannerTop);
+            data.put("gameListTop", gameViewInfo.gameListTop);
+            data.put("bannerBottom", gameViewInfo.bannerBottom);
+            data.put("gameListBottom", gameViewInfo.gameListBottom);
+        }
+        return mViewFactory.renderTemp(request, HTTP_VIEW, data);
     }
 
     private boolean isSamePath(String a, String b) {
@@ -226,28 +239,6 @@ public class HttpFBHandler implements HttpRequestHandler {
             return false;
         }
         return true;
-    }
-
-    private List<TwoColumn> buildTwoColumn(File dir) {
-        List<FileRow> fileRows = buildFileRows(dir);
-        if (fileRows == null) {
-            return null;
-        }
-        int index = 0;
-        int len = fileRows.size();
-        List<TwoColumn> twoColumns = new ArrayList<TwoColumn>();
-        TwoColumn twoColumn = null;
-        for (index = 0; index < len; index += 2) {
-            twoColumn = new TwoColumn();
-            if (index < len) {
-                twoColumn.fileRow1 = fileRows.get(index);
-            }
-            if (index + 1 < len) {
-                twoColumn.fileRow2 = fileRows.get(index + 1);
-            }
-            twoColumns.add(twoColumn);
-        }
-        return twoColumns;
     }
 
     private File[] getFileFromDataApp() {
@@ -327,6 +318,21 @@ public class HttpFBHandler implements HttpRequestHandler {
         return null;
     }
 
+    private GameViewInfo getGameViewInfo(File dir) {
+        GameViewInfo gameViewInfo = new GameViewInfo();
+        List<FileRow> fileList = buildFileRows(dir);
+        if (fileList != null) {
+            int size = fileList.size();
+            if (size > 1) {
+                gameViewInfo.gameListTop = fileList.subList(0, size / 2);
+                gameViewInfo.gameListBottom = fileList.subList(size / 2, size);
+            } else {
+                gameViewInfo.gameListTop = fileList;
+            }
+        }
+        return gameViewInfo;
+    }
+
     private List<FileRow> buildFileRows(File dir) {
         File[] files = dir.listFiles(mFilter); // 目录列表
         if (files != null) {
@@ -339,7 +345,8 @@ public class HttpFBHandler implements HttpRequestHandler {
                     fileRows.add(buildFileRow(file, false));
                 }
                 // 显示设备中已经安装的应用
-                if (Config.SHOW_INSTALLED_APP) {
+                // TODO : 不显示安装的应用
+                if (Config.SHOW_INSTALLED_APP && false) {
                     File appFiles[] = getFileFromDataApp();
                     sort(appFiles);
                     for (File file : appFiles) {
@@ -350,9 +357,9 @@ public class HttpFBHandler implements HttpRequestHandler {
                 }
             }
             // 获取本应用
+            // TODO : 不显示应用本身
             File seflFile = getSelfAppFile();
             if (seflFile != null) {
-                Log.d(Log.TAG, "seflFile = " + seflFile);
                 fileRows.add(0, buildFileRow(seflFile, true));
             }
             sortList(fileRows);
@@ -382,6 +389,8 @@ public class HttpFBHandler implements HttpRequestHandler {
                 if (label != null) {
                     name = label;
                 }
+                // TODO:
+                pkg = getPkgName(link);
                 icon = getApkIcon(link);
             }
             size = mCommonUtil.readableFileSize(f.length());
@@ -463,7 +472,7 @@ public class HttpFBHandler implements HttpRequestHandler {
         return null;
     }
 
-    private String getApkIcon(String apkFile) {
+    private String getPkgName(String apkFile) {
         Context context = GlobalInit.getInstance().getBaseContext();
         PackageManager pm = context.getPackageManager();
         if (pm == null) {
@@ -476,6 +485,31 @@ public class HttpFBHandler implements HttpRequestHandler {
             appInfo = info.applicationInfo;
             if (appInfo != null) {
                 appInfo.publicSourceDir = apkFile;
+                return appInfo.packageName;
+            }
+        }
+        return null;
+    }
+
+    private String getApkIcon(String apkFile) {
+        Context context = GlobalInit.getInstance().getBaseContext();
+        PackageManager pm = context.getPackageManager();
+        if (pm == null) {
+            return null;
+        }
+        PackageInfo info = pm.getPackageArchiveInfo(apkFile,
+                PackageManager.GET_ACTIVITIES);
+        ApplicationInfo appInfo = null;
+        String iconDir = CommonUtil.getSingleton().getIconDir();
+        if (info != null) {
+            appInfo = info.applicationInfo;
+            if (appInfo != null) {
+                appInfo.publicSourceDir = apkFile;
+                String pkg = appInfo.packageName;
+                File iconFile = new File(iconDir, pkg + ".png");
+                if (iconFile.exists()) {
+                    return iconFile.getAbsolutePath();
+                }
                 try {
                     Drawable drawable = appInfo.loadIcon(pm);
                     Bitmap bmp = null;
@@ -487,10 +521,10 @@ public class HttpFBHandler implements HttpRequestHandler {
                         // BitmapFactory.decodeResource(context.getResources(),
                         // R.drawable.icon_default);
                     }
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bmp.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                    byte iconbyte[] = baos.toByteArray();
-                    return Base64.encodeToString(iconbyte, Base64.DEFAULT);
+                    FileOutputStream fos = new FileOutputStream(iconFile);
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                    fos.close();
+                    return iconFile.getAbsolutePath();
                 } catch (Exception e) {
                     Log.d(Log.TAG, "e = " + e);
                 }
@@ -606,10 +640,11 @@ public class HttpFBHandler implements HttpRequestHandler {
                 + requestMethod);
         if ((localHost != null && localHost.equals(requestHost))
                 || (requestMethod != null && requestMethod
-                        .equalsIgnoreCase("POST"))) {
+                .equalsIgnoreCase("POST"))) {
             Log.d(Log.TAG, "HttpStatus.SC_FORBIDDEN : " + ip);
             response.setStatusCode(HttpStatus.SC_FORBIDDEN);
-            response.setEntity(resp403(request));
+            // TODO:403返回null
+            response.setEntity(null/*resp403(request)*/);
         } else {
             response.setStatusCode(301);
             if (!TextUtils.isEmpty(ip)) {
@@ -620,7 +655,7 @@ public class HttpFBHandler implements HttpRequestHandler {
             if (!ip.startsWith("http")) {
                 ip = "http://" + ip;
             }
-            ip += TAG_APPLIST;
+            ip += TAG_GAMES;
             Log.d(Log.TAG, "Redirect ipaddress : " + ip);
             response.addHeader("Location", ip);
         }

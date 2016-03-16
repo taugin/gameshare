@@ -18,6 +18,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.os.StatFs;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.Display;
 import android.view.WindowManager;
@@ -136,6 +137,16 @@ public class CommonUtil {
             return gameDir;
         }
         return "/";
+    }
+
+    public String getIconDir() {
+        String gameDir = getGameDir();
+        if (TextUtils.isEmpty(gameDir)) {
+            return null;
+        }
+        File iconDir = new File(gameDir, "icon");
+        iconDir.mkdirs();
+        return iconDir.getAbsolutePath();
     }
 
     public String getAppDir() {

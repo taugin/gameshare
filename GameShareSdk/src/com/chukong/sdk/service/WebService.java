@@ -1,16 +1,18 @@
 package com.chukong.sdk.service;
 
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
 import com.chukong.sdk.Constants.Config;
+import com.chukong.sdk.R;
 import com.chukong.sdk.common.Log;
 import com.chukong.sdk.dns.UDPSocketMonitor;
 import com.chukong.sdk.serv.WebServer;
@@ -41,7 +43,7 @@ public class WebService extends Service implements OnWebServListener {
 
     private NotificationManager mNM;
 
-    // private int NOTI_SERV_RUNNING = R.string.noti_serv_running;
+    private int NOTI_SERV_RUNNING = R.string.noti_serv_running;
 
     private WebServer mWebServer = null;
     private UDPSocketMonitor mUDPSocketMonitor = null;
@@ -106,7 +108,7 @@ public class WebService extends Service implements OnWebServListener {
     public void onStarted() {
         if (DEBUG)
             Log.d(TAG, "onStarted");
-        // showNotification(NOTI_SERV_RUNNING, R.drawable.ic_noti_running);
+        showNotification(NOTI_SERV_RUNNING, R.drawable.ic_noti_running);
         Log.d(Log.TAG, "mListener = " + mListener);
         if (mListener != null) {
             mListener.onStarted();
@@ -118,7 +120,7 @@ public class WebService extends Service implements OnWebServListener {
     public void onStopped() {
         if (DEBUG)
             Log.d(TAG, "onStopped");
-        //mNM.cancel(NOTI_SERV_RUNNING);
+        mNM.cancel(NOTI_SERV_RUNNING);
         // stopForeground(true);
         Log.d(Log.TAG, "mListener = " + mListener);
         if (mListener != null) {
@@ -173,22 +175,22 @@ public class WebService extends Service implements OnWebServListener {
         mTimer.schedule(resetTask, delay);
     }
 
-    /*
     @SuppressWarnings("deprecation")
     private void showNotification(int resId, int iconId) {
         CharSequence text = getText(resId);
 
         Notification notification = new Notification(iconId, text, System.currentTimeMillis());
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
-                WSActivity.class), 0);
+//        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
+//                WSActivity.class), 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(), 0);
 
-        notification.setLatestEventInfo(this, getText(R.string.app_name), text, contentIntent);
+        notification.setLatestEventInfo(this, getResources().getString(R.string.app_name), text, contentIntent);
         notification.flags = Notification.FLAG_ONGOING_EVENT;
 
         //mNM.notify(resId, notification);
         startForeground(resId, notification);
-    } */
+    }
 
     public boolean isRunning() {
         return isRunning;

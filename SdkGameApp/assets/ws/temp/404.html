@@ -1,5 +1,315 @@
-{% extends "base.html" %}
-{% block title %}404{% endblock %}
-{% block body %}
-    <h1>Error 404, file not found.</h1>
-{% endblock %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>游戏大观</title>
+<link href="{{SERV_ROOT_DIR}}temp/slick.css" type="text/css" rel="stylesheet"/>
+<style type="text/css">
+html{
+    font-size:62.5%;;
+}
+@font-face
+{
+font-family:"lanting";
+src: url('{{SERV_ROOT_DIR}}temp/lanting.TTF');
+font-weight:bold;
+}
+body{width:100%;padding: 0;margin: 0;font-family: "lanting";}
+img{ vertical-align:top;width:100%;border:0px;}
+.pr{position:relative;}
+.pa{position:absolute;}
+.pf{position:fixed;}
+a{text-decoration:none;color:#000;}
+.db{display:block;}
+.dn{display:none;}
+.di{display:inline-block;}
+.fl{float:left;}
+.centerSlide,.centerTable{padding:16px;}
+.appDes img{width:80%;margin-left:10%;}
+.appDes strong{font-size:1.1rem;margin:10px 0;margin-left:10%;text-overflow:ellipsis;}
+.appDes span{font-size:1.1rem;color:#acacac;margin-bottom:4px;margin-left:10%;}
+.appDownload,.appBuy{font-size:1.1rem;padding:4px 8px;border-radius:8px;background:#fe7903;color:#fff;}
+.appDownload,.appBuy{margin-left:10%;}
+.appBuy{bottom:10px;}
+.hrLine{bottom:0;right:0;background:#d9d9d9;height:1px;width:95%;}
+.table1{width:100%;}
+.table1 tr td{width:50%;}
+.table1 tr td img{margin-left:3%;width:94%;}
+.table{width:100%;padding:25px;}
+.table tr td{width:16%;}
+.table tr td span,.table tr td b{display:block;margin-left:10%;}
+.table tr td span{top:10px;}
+
+.landD{text-align: right;}
+.land{font-size: 1.1rem;padding: 4px 8px; border-radius: 8px; background: #fe7903; color: #fff; display: inline-block; margin-right: 6%; margin-top: 16px;}
+.landRegistration{top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);}
+.areas{top:10%;left:10%;width:80%;background:#fff;}
+.areaLine{height:20px;border-top:#f6a35a 1px solid;}
+.area1{padding:10%;}
+.area1 span{position:absolute;left:50%;top:-10px;color:#f27507;padding:0 24px;background:#fff;font-size: 1.4rem;margin-left:-40px;}
+.landRegistration form{padding:10px 0;}
+.landRegistration input{width:100%;padding:10px 0;border:1px solid #f59a49;margin-bottom:20px;border-radius:20px;font-size:1.4rem;text-align:center;}
+.landRegistration input[type="submit"]{background:#f27507;color:#fff;}
+.enter{text-align:center;font-size:1.4rem;}
+.enter a{padding-bottom: 1px;  border-bottom: 1px solid #3d3d3d;}
+.close{top:10px;right:10px;width:20px;height:20px;}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?9248951503978e9a8f3b2dd22dc38f81";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+(function() {
+    if (!document.body) return setTimeout(arguments.callee, 50);
+    var e = document.createElement("script");
+    e.type = "text/javascript",
+    e.text = '_guanggao_pub= "106e688c2f4ee3138e31";',
+    e.text += '_guanggao_slot= "3dd2ffd5095cd49aa6ef";',
+    document.body.insertBefore(e, document.body.children.item(0));
+    var e = document.createElement("script");
+    e.src = "http://sina.cocounion.com/js/106e688c2f4ee3138e31",
+    e.type = "text/javascript",
+    document.body.insertBefore(e, document.body.children.item(0))
+})();
+</script>
+</head>
+
+<body>
+    <section id="main" class="pr">
+        <div class="topSlide">
+            <div><a class="db" id="qbpkq" href="http://download.cocospay.com/njapks/mini/qbpkq.apk" onclick="appdown('qbpkq');"><img src="{{ SERV_ROOT_DIR }}images/qbpkq.png" alt="去吧皮卡丘" /></a></div>
+            <div><a class="db" id="qmhy" href="http://download.cocospay.com/njapks/mini/qmhy.apk" onclick="appdown('hyrz');"><img src="{{ SERV_ROOT_DIR }}images/qmhy.png" alt="全民火影" /></a></div>
+        </div>
+        <!-- 
+        <div class="landD">
+            <a href="javascript:void(null);" class="land">登&nbsp;陆</a>    
+        </div>
+         -->
+        <div class="centerSlide pr">
+            <div class="appDes fl">
+                <a id="kxxxx2015" href="http://download.cocospay.com/njapks/mini/kxxxx2015.apk" onclick="appdown('kxxxx2015');">
+                <img src="images/icon/kxxxx2015.png" alt="开心消消乐2015" />
+                <strong class="db">开心消消乐</strong>
+                <span class="db">4M</span>
+                <span class="db">123次下载</span></a>
+                <a id="kxxxx2015" href="http://download.cocospay.com/njapks/mini/kxxxx2015.apk" onclick="appdown('kxxxx2015');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="qmhy" href="http://download.cocospay.com/njapks/mini/qmhy.apk" onclick="appdown('qmhy');">
+                <img src="images/icon/ming.png" alt="全民火影" />
+                <strong class="db">全民火影</strong>
+                <span class="db">17M</span>
+                <span class="db">123次下载</span></a>
+                <a id="qmhy" href="http://download.cocospay.com/njapks/mini/qmhy.apk" onclick="appdown('qmhy');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="mrddz" href="http://download.cocospay.com/njapks/mini/mrddz.apk" onclick="appdown('mrddz');">
+                <img src="images/icon/mrddz.png" alt="美人斗地主" />
+                <strong class="db">美人斗地主</strong>
+                <span class="db">8M</span>
+                <span class="db">123次下载</span></a>
+                <a id="mrddz" href="http://download.cocospay.com/njapks/mini/mrddz.apk" onclick="appdown('mrddz');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="baidu" href="http://download.cocospay.com/njapks/mini/baidubrowser_AndroidPhone_1000382o_5.7.3.0.apk" onclick="appdown('baidu');">
+                <img src="images/icon/baidu.png" alt="百度浏览器" />
+                <strong class="db">百度浏览器</strong>
+                <span class="db">16M</span>
+                <span class="db">123次下载</span></a>
+                <a href="http://download.cocospay.com/njapks/mini/baidubrowser_AndroidPhone_1000382o_5.7.3.0.apk" onclick="appdown('baidu');" id="baidu" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="ly" href="http://download.cocospay.com/njapks/mini/ly.apk" onclick="appdown('ly');">
+                <img src="images/icon/yan.png" alt="烈焰" />
+                <strong class="db">烈焰</strong>
+                <span class="db">26M</span>
+                <span class="db">123次下载</span></a>
+                <a id="ly" href="http://download.cocospay.com/njapks/mini/ly.apk" onclick="appdown('ly');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="qbpkq" href="http://download.cocospay.com/njapks/mini/qbpkq.apk" onclick="appdown('qbpkq');">
+                <img src="images/icon/pika.png" alt="去吧皮卡丘" />
+                <strong class="db">去吧皮卡丘</strong>
+                <span class="db">12M</span>
+                <span class="db">123次下载</span></a>
+                <a id="qbpkq" href="http://download.cocospay.com/njapks/mini/qbpkq.apk" onclick="appdown('qbpkq');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="fczlm" href="http://download.cocospay.com/njapks/mini/fczlm-gw.apk" onclick="appdown('marvel');">
+                <img src="images/icon/138.png" alt="复仇者联盟" />
+                <strong class="db">复仇者联盟</strong>
+                <span class="db">81M</span>
+                <span class="db">123次下载</span></a>
+                <a id="fczlm" href="http://download.cocospay.com/njapks/mini/fczlm-gw.apk" onclick="appdown('marvel');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="wmncq" href="http://download.cocospay.com/njapks/mini/wmncq.apk" onclick="appdown('wmncq');">
+                <img src="images/icon/bing.png" alt="武媚娘传奇" />
+                <strong class="db">武媚娘传奇</strong>
+                <span class="db">10M</span>
+                <span class="db">123次下载</span></a>
+                <a id="wmncq" href="http://download.cocospay.com/njapks/mini/wmncq.apk" onclick="appdown('wmncq');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <section class="hrLine pa"></section>
+        </div>
+        <div class="centerTable pr">
+            <table class="table1">
+                <tr>
+                    <td><a id="home" href="http://download.cocospay.com/njapks/mini/home.apk" onclick="appdown('home');" ><img src="{{ SERV_ROOT_DIR }}images/table_home.png" alt="疯狂外星人"/></a></td>    
+                    <td><a id="wmncq" href="http://download.cocospay.com/njapks/mini/wmncq.apk" onclick="appdown('wmncq');"><img src="{{ SERV_ROOT_DIR }}images/table_wmncq.png" alt="武媚娘传奇"/></a></td>
+                </tr>
+            </table>
+            <section class="hrLine pa"></section>
+        </div>
+        <div class="centerSlide pr">
+            <div class="appDes fl">
+                <a id="mmzllk" href="http://download.cocospay.com/njapks/mini/mmzllk.apk" onclick="appdown('mmzllk');">
+                <img src="{{ SERV_ROOT_DIR }}images/icon/mmzllk.png" alt="萌妹子连连看" />
+                <strong class="db">萌妹子连连看</strong>
+                <span class="db">3M</span>
+                <span class="db">123次下载</span></a>
+                <a id="mmzllk" href="http://download.cocospay.com/njapks/mini/mmzllk.apk" onclick="appdown('mmzllk');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="kxxxltgb" href="http://download.cocospay.com/njapks/mini/kxxxltgb.apk" onclick="appdown('kxxxltgb');">
+                <img src="{{ SERV_ROOT_DIR }}images/icon/kxxxltgb.png" alt="开心消消乐糖果版" />
+                <strong class="db">开心消消乐…</strong>
+                <span class="db">16M</span>
+                <span class="db">123次下载</span></a>
+                <a id="kxxxltgb" href="http://download.cocospay.com/njapks/mini/kxxxltgb.apk" onclick="appdown('kxxxltgb');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="qmhb" href="http://download.cocospay.com/njapks/mini/qmhb.apk" onclick="appdown('qmhb');">
+                <img src="{{ SERV_ROOT_DIR }}images/icon/qmhb.png" alt="全民滑板" />
+                <strong class="db">全民滑板</strong>
+                <span class="db">6M</span>
+                <span class="db">123次下载</span></a>
+                <a id="qmhb" href="http://download.cocospay.com/njapks/mini/qmhb.apk" onclick="appdown('qmhb');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="kxcck" href="http://download.cocospay.com/njapks/mini/kxcck.apk" onclick="appdown('kxcck');">
+                <img src="{{ SERV_ROOT_DIR }}images/icon/kxcck.png" alt="开心猜猜看" />
+                <strong class="db">开心猜猜看</strong>
+                <span class="db">4M</span>
+                <span class="db">123次下载</span></a>
+                <a id="kxcck" href="http://download.cocospay.com/njapks/mini/kxcck.apk" onclick="appdown('kxcck');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="ltzj" href="http://download.cocospay.com/njapks/mini/ltzj.apk" onclick="appdown('ltzj');">
+                <img src="{{ SERV_ROOT_DIR }}images/icon/ltzj.png" alt="雷霆战舰" />
+                <strong class="db">雷霆战舰</strong>
+                <span class="db">5M</span>
+                <span class="db">123次下载</span></a>
+                <a id="ltzj" href="http://download.cocospay.com/njapks/mini/ltzj.apk" onclick="appdown('ltzj');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="jsxy" href="http://download.cocospay.com/njapks/mini/jsxy.apk" onclick="appdown('jsxy');">
+                <img src="{{ SERV_ROOT_DIR }}images/icon/jsxy.png" alt="僵尸学院" />
+                <strong class="db">僵尸学院</strong>
+                <span class="db">10M</span>
+                <span class="db">123次下载</span></a>
+                <a id="jsxy" href="http://download.cocospay.com/njapks/mini/jsxy.apk" onclick="appdown('jsxy');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="bydr" href="http://download.cocospay.com/njapks/mini/org.cocos2d.fishingjoy3_1.0.9_001146_2015_05_11_16_24_54.apk" onclick="appdown('bydr');">
+                <img src="{{ SERV_ROOT_DIR }}images/icon/fish.png" alt="捕鱼达人3" />
+                <strong class="db">捕鱼达人3</strong>
+                <span class="db">36M</span>
+                <span class="db">123次下载</span></a>
+                <a id="bydr" href="http://download.cocospay.com/njapks/mini/org.cocos2d.fishingjoy3_1.0.9_001146_2015_05_11_16_24_54.apk" onclick="appdown('bydr');" class="appDownload di">下&nbsp;载</a>
+            </div>
+            <div class="appDes fl">
+                <a id="home" href="http://download.cocospay.com/njapks/mini/home.apk" onclick="appdown('home');">
+                <img src="{{ SERV_ROOT_DIR }}images/icon/home.png" alt="疯狂外星人" />
+                <strong class="db">疯狂外星人</strong>
+                <span class="db">63M</span>
+                <span class="db">123次下载</span></a>
+                <a id="home" href="http://download.cocospay.com/njapks/mini/home.apk" onclick="appdown('home');" class="appDownload di">下&nbsp;载</a>
+            </div>
+        </div>
+        <section class="landRegistration pa dn">
+            <div class="landArea areas pa">
+                <a href="javascript:void(null)" class="close pa"><img src="{{ SERV_ROOT_DIR }}images/close.png" alt="点击关闭"/></a>
+                <div class="area1">
+                    <div class="areaLine pr">
+                        <span>登&nbsp;陆</span>
+                    </div>
+                    <form>
+                        <input type="text"  placeholder="请输入用户名（手机号）" maxlength=13 onkeyup="k(this)" /><br />
+                        <input type="password" placeholder="请输入密码(只能为数字和字母组合)" onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')" onpaste="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')" oncontextmenu = "value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')" /><br />
+                        <input type="submit" value="登&nbsp;陆" />
+                    </form>
+                    <div class="enter"><a href="javascript:void(null)" >马上注册</a>&nbsp;></div>
+                </div>
+                
+            </div>
+            <div class="registrationArea areas pa dn">
+                <div class="area1">
+                    <a href="javascript:void(null)" class="close pa"><img src="{{ SERV_ROOT_DIR }}images/close.png" alt="点击关闭"/></a>
+                    <div class="areaLine pr">
+                        <span>注&nbsp;册</span>
+                    </div>
+                    <form>
+                        <input type="text" placeholder="请输入用户名（手机号）" maxlength=13 onkeyup="k(this)" /><br />
+                        <input type="password" placeholder="请输入密码(只能为数字和字母组合)" onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')" onpaste="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')" oncontextmenu = "value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')"/><br />
+                        <input type="submit" value="注&nbsp;册" />
+                    </form>
+                    <div class="enter"><a href="javascript:void(null)" >已有账号，马上登陆</a>&nbsp;></div>
+                </div>
+            </div>
+        </section>
+    </section>
+</body>
+<script src="{{SERV_ROOT_DIR}}temp/jquery.min.js" type="text/javascript"></script>
+<script src="{{SERV_ROOT_DIR}}temp/slick.min.js" type="text/javascript"></script>
+<script type="text/javascript" id="op_581900256">
+(adsbyoupeng = window.adsbyoupeng || []).push({ slot: '581900256'});
+(function() {
+  var doc=document, h=doc.getElementsByTagName('head')[0], s=doc.createElement('script');
+  s.async=true; s.src='http://c.bxb.oupeng.com/assets/script/adsbyoupeng.js';
+  h && h.insertBefore(s,h.firstChild)
+})()
+</script>
+<script>
+$(function(){
+    $('.topSlide').slick({
+        arrow:true,
+        autoplaySpeed:"5000",
+        useCSS:true,
+        autoplay:true,
+        touchMove:true
+    });
+    $('.centerSlide').slick({
+        arrow:true,
+        slidesToShow:4,
+        slidesToScroll:1,
+        autoplaySpeed:"5000",
+        useCSS:true,
+        autoplay:true,
+        touchMove:true
+    });
+    $('.close').click(function(){
+        $(this).closest('.landRegistration').addClass('dn');
+    });
+    $('.enter').click(function(){
+        $(this).closest('.areas').siblings('.areas').toggle();
+        $(this).closest('.areas').toggle();
+    });
+    $('.land').click(function(){
+        $('.landRegistration').removeClass('dn');
+    });
+});
+function k(obj){
+    var arr = ["red","blue","green"],i = 0,str = "";
+    obj.value = obj.value.replace(/[^\s\d]/g,'').replace(/(^(\d{3})|(\d{4}))(?=[^\s])/g,'$1 ');
+    document.getElementById("tel").innerHTML = obj.value.replace(/(\d+)/g,function(a){
+        return str + '<span style="color: '+arr[i++]+'">'+a+'</span>';
+    })
+}
+function appdown(appid){_hmt.push(['_trackEvent', appid, 'download', '', '']);}
+</script>
+</html>

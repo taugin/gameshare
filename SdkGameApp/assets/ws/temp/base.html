@@ -1,14 +1,143 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-	<title>{% block title %}{% endblock %}</title>
-    <link rel="shortcut icon" href="{{ SERV_ROOT_DIR }}img/favicon.ico">
-    {% block style %}{% endblock %}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>游戏大观</title>
+<link href="{{SERV_ROOT_DIR}}temp/slick.css" type="text/css" rel="stylesheet"/>
+<style type="text/css">
+html{
+    font-size:62.5%;;
+}
+@font-face
+{
+font-family:"lanting";
+src: url('{{SERV_ROOT_DIR}}temp/lanting.TTF');
+font-weight:bold;
+}
+body{width:100%;padding: 0;margin: 0;font-family: "lanting";}
+img{ vertical-align:top;width:100%;border:0px;}
+.pr{position:relative;}
+.pa{position:absolute;}
+.pf{position:fixed;}
+a{text-decoration:none;color:#000;}
+.db{display:block;}
+.dn{display:none;}
+.di{display:inline-block;}
+.fl{float:left;}
+.centerSlide,.centerTable{padding:16px;}
+.appDes img{width:80%;margin-left:10%;}
+.appDes strong{font-size:1.1rem;margin:10px 0;margin-left:10%;text-overflow:ellipsis;}
+.appDes span{font-size:1.1rem;color:#acacac;margin-bottom:4px;margin-left:10%;}
+.appDownload,.appBuy{font-size:1.1rem;padding:4px 8px;border-radius:8px;background:#fe7903;color:#fff;}
+.appDownload,.appBuy{margin-left:10%;}
+.appBuy{bottom:10px;}
+.hrLine{bottom:0;right:0;background:#d9d9d9;height:1px;width:95%;}
+.table1{width:100%;}
+.table1 tr td{width:50%;}
+.table1 tr td img{margin-left:3%;width:94%;}
+.table{width:100%;padding:25px;}
+.table tr td{width:16%;}
+.table tr td span,.table tr td b{display:block;margin-left:10%;}
+.table tr td span{top:10px;}
+
+.landD{text-align: right;}
+.land{font-size: 1.1rem;padding: 4px 8px; border-radius: 8px; background: #fe7903; color: #fff; display: inline-block; margin-right: 6%; margin-top: 16px;}
+.landRegistration{top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);}
+.areas{top:10%;left:10%;width:80%;background:#fff;}
+.areaLine{height:20px;border-top:#f6a35a 1px solid;}
+.area1{padding:10%;}
+.area1 span{position:absolute;left:50%;top:-10px;color:#f27507;padding:0 24px;background:#fff;font-size: 1.4rem;margin-left:-40px;}
+.landRegistration form{padding:10px 0;}
+.landRegistration input{width:100%;padding:10px 0;border:1px solid #f59a49;margin-bottom:20px;border-radius:20px;font-size:1.4rem;text-align:center;}
+.landRegistration input[type="submit"]{background:#f27507;color:#fff;}
+.enter{text-align:center;font-size:1.4rem;}
+.enter a{padding-bottom: 1px;  border-bottom: 1px solid #3d3d3d;}
+.close{top:10px;right:10px;width:20px;height:20px;}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?9248951503978e9a8f3b2dd22dc38f81";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+(function() {
+    if (!document.body) return setTimeout(arguments.callee, 50);
+    var e = document.createElement("script");
+    e.type = "text/javascript",
+    e.text = '_guanggao_pub= "106e688c2f4ee3138e31";',
+    e.text += '_guanggao_slot= "3dd2ffd5095cd49aa6ef";',
+    document.body.insertBefore(e, document.body.children.item(0));
+    var e = document.createElement("script");
+    e.src = "http://sina.cocounion.com/js/106e688c2f4ee3138e31",
+    e.type = "text/javascript",
+    document.body.insertBefore(e, document.body.children.item(0))
+})();
+</script>
 </head>
+
 <body>
-    {% block body %}{% endblock %}
-    {% block script %}{% endblock %}
+    <section id="main" class="pr">
+        {% block bannerTop %}{% endblock %}
+        <div class="centerSlide pr">
+            {% block gamelistTop %}{% endblock %}
+            <section class="hrLine pa"></section>
+        </div>
+        <div class="centerTable pr">
+            {% block bannerFix %}{% endblock %}
+            <section class="hrLine pa"></section>
+        </div>
+        {% block gamelistBottom %}{% endblock %}
+    </section>
 </body>
+<script src="{{SERV_ROOT_DIR}}temp/jquery.min.js" type="text/javascript"></script>
+<script src="{{SERV_ROOT_DIR}}temp/slick.min.js" type="text/javascript"></script>
+<script type="text/javascript" id="op_581900256">
+(adsbyoupeng = window.adsbyoupeng || []).push({ slot: '581900256'});
+(function() {
+  var doc=document, h=doc.getElementsByTagName('head')[0], s=doc.createElement('script');
+  s.async=true; s.src='http://c.bxb.oupeng.com/assets/script/adsbyoupeng.js';
+  h && h.insertBefore(s,h.firstChild)
+})()
+</script>
+<script>
+$(function(){
+    $('.topSlide').slick({
+        arrow:true,
+        autoplaySpeed:"5000",
+        useCSS:true,
+        autoplay:true,
+        touchMove:true
+    });
+    $('.centerSlide').slick({
+        arrow:true,
+        slidesToShow:4,
+        slidesToScroll:1,
+        autoplaySpeed:"5000",
+        useCSS:true,
+        autoplay:true,
+        touchMove:true
+    });
+    $('.close').click(function(){
+        $(this).closest('.landRegistration').addClass('dn');
+    });
+    $('.enter').click(function(){
+        $(this).closest('.areas').siblings('.areas').toggle();
+        $(this).closest('.areas').toggle();
+    });
+    $('.land').click(function(){
+        $('.landRegistration').removeClass('dn');
+    });
+});
+function k(obj){
+    var arr = ["red","blue","green"],i = 0,str = "";
+    obj.value = obj.value.replace(/[^\s\d]/g,'').replace(/(^(\d{3})|(\d{4}))(?=[^\s])/g,'$1 ');
+    document.getElementById("tel").innerHTML = obj.value.replace(/(\d+)/g,function(a){
+        return str + '<span style="color: '+arr[i++]+'">'+a+'</span>';
+    })
+}
+function appdown(appid){_hmt.push(['_trackEvent', appid, 'download', '', '']);}
+</script>
 </html>

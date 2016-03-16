@@ -7,12 +7,12 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 import org.join.web.serv.R;
 
-import com.chukong.sdk.Constants;
-import com.chukong.sdk.util.CommonUtil;
-
 import android.content.Context;
 import android.os.Looper;
 import android.widget.Toast;
+
+import com.chukong.sdk.Constants;
+import com.chukong.sdk.util.CommonUtil;
 
 /** 
  * @brief 异常崩溃处理类

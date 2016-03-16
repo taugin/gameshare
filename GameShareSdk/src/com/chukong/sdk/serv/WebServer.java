@@ -1,10 +1,8 @@
 package com.chukong.sdk.serv;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,7 +23,7 @@ import org.apache.http.protocol.ResponseServer;
 
 import com.chukong.sdk.Constants.Config;
 import com.chukong.sdk.common.Log;
-import com.chukong.sdk.serv.req.HttpFBHandler;
+import com.chukong.sdk.serv.req.HttpGameHandler;
 import com.chukong.sdk.serv.req.HttpProgressHandler;
 import com.chukong.sdk.util.CommonUtil;
 
@@ -101,7 +99,7 @@ public class WebServer extends Thread {
             // reqistry.register(UrlPattern.DELETE, new HttpDelHandler(webRoot));
             // reqistry.register(UrlPattern.UPLOAD, new HttpUpHandler(webRoot));
             reqistry.register(UrlPattern.PROGRESS, new HttpProgressHandler());
-            reqistry.register(UrlPattern.BROWSE, new HttpFBHandler(webRoot));
+            reqistry.register(UrlPattern.BROWSE, new HttpGameHandler(webRoot));
             // 设置HTTP请求执行器
             httpService.setHandlerResolver(reqistry);
             // 回调通知服务开始

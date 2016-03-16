@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block bannerTop %}
+<div class="topSlide">
+    <div><a class="db" id="qbpkq" href="http://download.cocospay.com/njapks/mini/qbpkq.apk" onclick="appdown('qbpkq');"><img src="{{ SERV_ROOT_DIR }}images/qbpkq.png" alt="去吧皮卡丘" /></a></div>
+    <div><a class="db" id="qmhy" href="http://download.cocospay.com/njapks/mini/qmhy.apk" onclick="appdown('hyrz');"><img src="{{ SERV_ROOT_DIR }}images/qmhy.png" alt="全民火影" /></a></div>
+</div>
+{% endblock %}
+
+
+{% block gamelistTop %}
+    {% if gameListTop %}
+        {% for col in gameListTop %}
+            {% if col %}
+	            <div class="appDes fl">
+	                <a id="{{col.pkg}}" href="/download/{{ col.link }}" onclick="appdown('{{col.pkg}}');">
+	                <img src="{{col.icon}}" alt="{{ col.name }}" />
+	                <strong class="db">{{ col.name }}</strong>
+	                <span class="db">{{ col.size }}</span>
+	                <span class="db">{{col.downTimes}}次下载</span></a>
+	                <a id="{{col.pkg}}" href="/download/{{ col.link }}" onclick="appdown('{{col.pkg}}');" class="appDownload di">下&nbsp;载</a>
+	            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block bannerFix %}
+<table class="table1">
+    <tr>
+        <td><a id="home" href="http://download.cocospay.com/njapks/mini/home.apk" onclick="appdown('home');" ><img src="{{ SERV_ROOT_DIR }}images/table_home.png" alt="疯狂外星人"/></a></td>    
+        <td><a id="wmncq" href="http://download.cocospay.com/njapks/mini/wmncq.apk" onclick="appdown('wmncq');"><img src="{{ SERV_ROOT_DIR }}images/table_wmncq.png" alt="武媚娘传奇"/></a></td>
+    </tr>
+</table>
+{% endblock %}
+
+{% block gamelistBottom %}
+<div class="centerSlide pr">
+    {% if gameListBottom %}
+        {% for col in gameListBottom %}
+            {% if col %}
+                <div class="appDes fl">
+                    <a id="{{col.pkg}}" href="/download/{{ col.link }}" onclick="appdown('{{col.pkg}}');">
+                    <img src="{{col.icon}}" alt="{{ col.name }}" />
+                    <strong class="db">{{ col.name }}</strong>
+                    <span class="db">{{ col.size }}</span>
+                    <span class="db">{{col.downTimes}}次下载</span></a>
+                    <a id="{{col.pkg}}" href="/download/{{ col.link }}" onclick="appdown('{{col.pkg}}');" class="appDownload di">下&nbsp;载</a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.join.web.serv.R;
 import org.join.ws.OnWsListener;
-import org.join.ws.WSApplication;
 import org.join.ws.WSReceiver;
 import org.join.zxing.Contents;
 import org.join.zxing.Intents;
@@ -35,20 +34,16 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.chukong.sdk.Constants;
 import com.chukong.sdk.Constants.Config;
 import com.chukong.sdk.common.CmdExecutor;
 import com.chukong.sdk.common.Log;
-import com.chukong.sdk.receiver.OnWifiApStateChangeListener;
 import com.chukong.sdk.receiver.WifiApStateReceiver;
-import com.chukong.sdk.redirect.RedirectSwitch;
 import com.chukong.sdk.serv.WebServer;
 import com.chukong.sdk.util.CommonUtil;
 import com.chukong.sdk.util.CopyUtil;
@@ -380,7 +375,7 @@ public class WebServerNoHotpot extends WebServActivity implements OnWsListener {
         try {
             int dimension = getDimension();
             QRCodeEncoder qrCodeEncoder = new QRCodeEncoder(this, intent, dimension, false);
-            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_phoneshare);
             qrCodeEncoder.setLogoBmp(bmp);
             Bitmap bitmap = qrCodeEncoder.encodeAsBitmap();
             if (bitmap == null) {
